@@ -25,4 +25,3 @@ const registerUser = async ({ name, email, password_hash }) => {
 
     return result.rows[0] || null;
 }
-

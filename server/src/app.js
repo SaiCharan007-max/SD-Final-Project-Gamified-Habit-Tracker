@@ -4,8 +4,8 @@ import morgan from "morgan";
 
 // Routes
 import authRoutes from "./routes/auth.routes.js";
+import habitRoutes from "./routes/habit.routes.js";
 // import taskRoutes from "./routes/task.routes.js";
-// import habitRoutes from "./routes/habit.routes.js";
 // import leaderboardRoutes from "./routes/leaderboard.routes.js";
 
 // Error handler
@@ -29,8 +29,8 @@ app.use(morgan("dev"));
 
 
 app.use("/api/auth", authRoutes);
+app.use("/api/habits", habitRoutes);
 // app.use("/api/tasks", taskRoutes);
-// app.use("/api/habits", habitRoutes);
 // app.use("/api/leaderboard", leaderboardRoutes);
 
 
