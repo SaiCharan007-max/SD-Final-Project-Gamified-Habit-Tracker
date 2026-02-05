@@ -3,16 +3,16 @@ import { registerUser, loginUser } from "../services/auth.service.js";
 
 export const register = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body;
+        const { username, email, password } = req.body;
 
         const errors = validationResult(req);
         if (!erros.isEmpty()) {
             return res.status(400).json({
-                erros: erros.array()
+                errors: errors.array()
             });
         }
 
-        const user = await registerUser({ name, email, password });
+        const user = await registerUser({ name: username, email, password });
         return res.status(201).json({
             data: user
         });
