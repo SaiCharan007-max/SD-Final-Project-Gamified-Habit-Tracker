@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post("/register",
     [
-        body("name").notEmpty(),
+        body("username").notEmpty(),
         body("email").isEmail(),
         body("password").isLength({ min: 8 })
     ]

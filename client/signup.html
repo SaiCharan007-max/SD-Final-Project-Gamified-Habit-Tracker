@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>HabitQuest SignUp</title>
+        <link rel="stylesheet" href="css/auth.css" />
+        <link rel="stylesheet" href="css/main.css" />
+        <link href="https://fonts.googleapis.com/css2?family=Jersey+25&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Jersey+25&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Jersey+25&family=Orbitron:wght@400..900&family=SN+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    </head>
+    <script src="js/auth.js" defer></script>
+    <body>
+        <header class="app-header">
+            <div class="app-logo">HabitQuest</div>
+        </header>
+        <div class ="login-page">
+            <div class="login-layout">
+                <div class="login-info">
+                    <h1>Create Your HabitQuest Account</h1>
+                    <p>
+                        Join HabitQuest to start building positive habits through
+                        gamification. Track your progress, earn rewards, and level up
+                        your daily routine!
+                    </p>
+                </div>
+                <div class="login-container">
+                    <div class="login-box">
+                        <h2>Sign Up</h2>
+                        <form id="signup-form">
+                            <div class="input-group">
+                                <label for="new-username">Username:</label>
+                                <input type="text" id="new-username" placeholder="Choose a username" required />
+                            </div>
+                            <div class="input-group">
+                                <label for="E-Mail">Email:</label>
+                                <input type="email" id="E-Mail" placeholder="Enter your email" required />
+                            </div>
+                            <div class="input-group password-group">
+                                <label for="new-password">Password:</label>
+                                <div class="password-wrapper">
+                                    <input
+                                        type="password"
+                                        id="new-password"
+                                        placeholder="Create a password"
+                                        required
+                                    />
+                                    <span class="toggle-password" onclick="togglePassword(this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </span>
+                                </div>
+                                <ul class="password-rules" id="password-rules">
+                                        <li id="rule-length">Minimum 8 characters</li>
+                                        <li id="rule-upper">At least 1 uppercase letter</li>
+                                        <li id="rule-lower">At least 1 lowercase letter</li>
+                                        <li id="rule-number">At least 1 number</li>
+                                        <li id="rule-symbol">At least 1 symbol</li>
+                                </ul>
+                            </div>
+                            <div class="input-group password-group">
+                                <label for="confirm-password">Confirm Password:</label>
+                                <div class="password-wrapper">
+                                    <input
+                                        type="password"
+                                        id="confirm-password"
+                                        placeholder="Confirm your password"
+                                        required
+                                    />
+                                    <span class="toggle-password" onclick="togglePassword(this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </span>
+                                </div>
+                            <button type="submit" id="register-btn" disabled>Register</button>
+                            <p id="signup-error-message"></p>
+                        </form>
+                        <p class="signup-text">
+                            Already have an account? <a href="index.html">Login here</a>
+                        </p>
+                    </div>
+            </div>
+        </div>       
+    </body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Habit Tracker</title>
+        <link rel="stylesheet" href="css/auth.css" />
+        <link rel="stylesheet" href="css/main.css" />
+        <link href="https://fonts.googleapis.com/css2?family=Jersey+25&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Jersey+25&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Jersey+25&family=Orbitron:wght@400..900&family=SN+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    </head>
+    
+    <body>
+        <header class="app-header">
+            <div class="app-logo">HabitQuest</div>
+        </header>
+        <div class="login-page">
+            <div class="login-layout">
+
+                <div class="login-info">
+                    <h1>Welcome to the Gamified Habit Tracker</h1>
+                    <p>
+                        HabitQuest helps you build positive habits through consistency,
+                        rewards, and smart scheduling. Track your progress, stay motivated,
+                        and level up your daily routine.
+                    </p>
+                </div>
+
+                <div class="login-container">
+                    <div class="login-box">
+                        <h2>Login</h2>
+                        <form id="login-form">
+                            <div class="input-group">
+                                <label for="Email">Email:</label>
+                                <input type="email" id="email" placeholder="Enter your Email" required />
+                            </div>
+                            <div class="input-group password-group">
+                                <label for="password">Password:</label>
+                                <div class="password-wrapper">
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        placeholder="Enter your password"
+                                        required
+                                    />
+                                    <span class="toggle-password" onclick="togglePassword(this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </span>
+
+                                </div>
+                            </div>
+
+
+                            <button type="submit" id="login-btn" disabled>Login</button>
+                            <p id="error-message"></p>
+                        </form>
+                        <p class="signup-text">
+                            New user? <a href="signup.html">Register here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="js/auth.js" defer></script>
+    </body>
+</html>
