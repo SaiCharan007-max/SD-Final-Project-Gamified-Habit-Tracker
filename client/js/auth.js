@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const checkLoginFields = () => {
             loginBtn.disabled =
-            emailInput.value.trim() === "" ||
-            passwordInput.value.trim() === "";
+                emailInput.value.trim() === "" ||
+                passwordInput.value.trim() === "";
         };
 
         emailInput.addEventListener("input", checkLoginFields);
@@ -33,23 +33,25 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-                const response = await fetch("http://localhost:8080/login", {
+                const response = await fetch("http://localhost:3137/api/auth/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password })
-            });
+                });
 
-            const result = await response.json();
+                const result = await response.json();
 
-            if (response.ok) {
-                window.location.href = "dashboard.html";
-            } else {
-                loginError.textContent =
-                    result.message || "Login failed.";
-            }
+                if (response.ok) {
+                    localStorage.setItem("token", result.token);
+                    window.location.href = "dashboard.html";
+                }
+                else {
+                    loginError.textContent =
+                        result.message || "Login failed.";
+                }
             } catch (error) {
                 loginError.textContent =
-                "Server not reachable. Try again later.";
+                    "Server not reachable. Try again later.";
             }
         });
     }
@@ -137,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-                const response = await fetch("http://localhost:8080/register", {
+                const response = await fetch("http://localhost:3137/api/auth/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username, email, password })

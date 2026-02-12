@@ -17,12 +17,8 @@ const app = express();
 app.use(express.json());
 
 // Enable CORS
-app.use(cors(
-    {
-        origin: "http://localhost:5173",
-        credentials: false
-    }
-));
+app.use(cors());
+
 
 // HTTP request logger (dev friendly)
 app.use(morgan("dev"));
@@ -35,7 +31,7 @@ app.use("/api/habits", habitRoutes);
 
 
 app.get("/health", (req, res) => {
-  res.status(200).json({ status: "OK" });
+    res.status(200).json({ status: "OK" });
 });
 
 app.use(errorMiddleware);

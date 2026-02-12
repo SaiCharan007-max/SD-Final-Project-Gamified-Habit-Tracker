@@ -13,10 +13,10 @@ export const getUserByEmail = async (email) => {
     return result.rows[0] || null;
 }
 
-const registerUser = async ({ name, email, password_hash }) => {
+export const registerUser = async ({ name, email, password_hash }) => {
     const result = await pool.query(
         ` 
-            INSERT INTO users name, email, password_hash
+            INSERT INTO users (name, email, password_hash)
             VALUES ($1, $2, $3)
             RETURNING id, name, email
         `,

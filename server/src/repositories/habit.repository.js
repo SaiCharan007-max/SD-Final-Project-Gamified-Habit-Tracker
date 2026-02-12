@@ -23,7 +23,7 @@ export const getHabits = async (userId) => {
         [userId]
     );
 
-    return result.rows || null;
+    return result.rows || [];
 }
 
 export const getHabitByUHId = async (userId, habitId) => {
@@ -42,7 +42,7 @@ export const getHabitLogByHabitId = async (habitId) => {
     const result = await pool.query(
         `
             SELECT * FROM habit_logs
-            WHERE habit_id=$1 AND completed_at=CURRENT_DATE;
+            WHERE habit_id=$1 AND completed_date=CURRENT_DATE;
         `,
         [habitId]
     );
@@ -68,7 +68,7 @@ export const updateHabitLog = async ({habitId, count_done}) => {
         `
             UPDATE habit_logs   
             SET count_done=$1
-            WHERE habit_id=$2
+            WHERE habit_id=$2 AND completed_date=CURRENT_DATE
             RETURNING *;
         `,
         [count_done, habitId]
