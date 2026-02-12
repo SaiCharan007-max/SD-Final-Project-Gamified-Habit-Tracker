@@ -6,7 +6,7 @@ export const register = async (req, res, next) => {
         const { username, email, password } = req.body;
 
         const errors = validationResult(req);
-        if (!erros.isEmpty()) {
+        if (!errors.isEmpty()) {
             return res.status(400).json({
                 errors: errors.array()
             });
