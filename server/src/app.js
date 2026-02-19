@@ -5,8 +5,8 @@ import morgan from "morgan";
 // Routes
 import authRoutes from "./routes/auth.routes.js";
 import habitRoutes from "./routes/habit.routes.js";
-// import taskRoutes from "./routes/task.routes.js";
-// import leaderboardRoutes from "./routes/leaderboard.routes.js";
+import taskRoutes from "./routes/task.routes.js";
+import leaderboardRoutes from "./routes/leaderboard.routes.js";
 
 // Error handler
 import errorMiddleware from "./middlewares/error.middleware.js";
@@ -26,8 +26,8 @@ app.use(morgan("dev"));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/habits", habitRoutes);
-// app.use("/api/tasks", taskRoutes);
-// app.use("/api/leaderboard", leaderboardRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
 
 
 app.get("/health", (req, res) => {
