@@ -1,5 +1,6 @@
 import AppError from "../utils/AppError.js";
 import * as repoHabit from "../repositories/habit.repository.js";
+import { evaluateAndAwardBadges } from "./gamification.service.js";
 
 export const createHabit = async ({ userId, name, frequency, target_count }) => {
     const allowedFreq = ["daily", "weekly"];
@@ -31,7 +32,14 @@ export const completeHabit = async ({ userId, habitId }) => {
 
     // First log of today
     if (!habitLog) {
-        return await repoHabit.createHabitLog({ habitId, countDone: 1 });
+        const createdLog = await repoHabit.createHabitLog({ habitId, countDone: 1 });
+
+        if (createdLog.count_done === habit.target_count) {
+            const gamification = await updateStreakandXP({ userId, habit });
+            return { ...createdLog, ...gamification };
+        }
+
+        return createdLog;
     }
 
     // Already completed today
@@ -96,12 +104,15 @@ const updateStreakandXP = async ({ userId, habit }) => {
         userId,
         xp: xpCalculated
     });
+    const newBadges = await evaluateAndAwardBadges(userId);
+    const level = Math.floor((updatedStats.total_points || 0) / 100) + 1;
 
     return {
         xp_gained: xpCalculated,
         current_streak: newStreak,
         best_streak: newBestStreak,
         total_points: updatedStats.total_points,
-        level: updatedStats.level
+        level,
+        new_badges: newBadges
     };
 };

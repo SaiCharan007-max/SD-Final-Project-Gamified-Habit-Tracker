@@ -1,0 +1,496 @@
+{
+  "info": {
+    "name": "Habit Tracker API (Updated)",
+    "_postman_id": "de2ef3c2-0ac2-4339-9e96-4ad74ca2ecbf",
+    "description": "Updated collection aligned with current backend schema and local DB setup.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"demo_user\",\n  \"email\": \"demo@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBase}}/auth/register",
+              "host": [
+                "{{apiBase}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login success', function () { pm.response.to.have.status(200); });",
+                  "const data = pm.response.json();",
+                  "if (data.token) pm.collectionVariables.set('token', data.token);",
+                  "if (data.user && data.user.id) pm.collectionVariables.set('userId', String(data.user.id));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBase}}/auth/login",
+              "host": [
+                "{{apiBase}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Habits",
+      "item": [
+        {
+          "name": "Create Habit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Drink Water\",\n  \"frequency\": \"daily\",\n  \"target_count\": 3\n}"
+            },
+            "url": {
+              "raw": "{{apiBase}}/habits/create",
+              "host": [
+                "{{apiBase}}"
+              ],
+              "path": [
+                "habits",
+                "create"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Habits",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Get habits success', function () { pm.response.to.have.status(200); });",
+                  "const data = pm.response.json();",
+                  "const habits = data.data || [];",
+                  "if (habits.length > 0 && habits[0].id) pm.collectionVariables.set('habitId', String(habits[0].id));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{apiBase}}/habits",
+              "host": [
+                "{{apiBase}}"
+              ],
+              "path": [
+                "habits"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Complete Habit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{apiBase}}/habits/complete/{{habitId}}",
+              "host": [
+                "{{apiBase}}"
+              ],
+              "path": [
+                "habits",
+                "complete",
+                "{{habitId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "item": [
+        {
+          "name": "Create Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Complete Assignment\",\n  \"description\": \"Finish SD lab report\",\n  \"priority\": \"high\",\n  \"due_date\": \"2026-03-10\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBase}}/tasks",
+              "host": [
+                "{{apiBase}}"
+              ],
+              "path": [
+                "tasks"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Tasks",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Get tasks success', function () { pm.response.to.have.status(200); });",
+                  "const data = pm.response.json();",
+                  "const tasks = data.data || [];",
+                  "if (tasks.length > 0 && tasks[0].id) pm.collectionVariables.set('taskId', String(tasks[0].id));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{apiBase}}/tasks",
+              "host": [
+                "{{apiBase}}"
+              ],
+              "path": [
+                "tasks"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Complete Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{apiBase}}/tasks/complete/{{taskId}}",
+              "host": [
+                "{{apiBase}}"
+              ],
+              "path": [
+                "tasks",
+                "complete",
+                "{{taskId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Focus",
+      "item": [
+        {
+          "name": "Start Focus",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Start focus success', function () { pm.response.to.have.status(201); });",
+                  "const data = pm.response.json();",
+                  "if (data.data && data.data.id) pm.collectionVariables.set('focusSessionId', String(data.data.id));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{apiBase}}/focus/start",
+              "host": [
+                "{{apiBase}}"
+              ],
+              "path": [
+                "focus",
+                "start"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Stop Focus",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{apiBase}}/focus/stop/{{focusSessionId}}",
+              "host": [
+                "{{apiBase}}"
+              ],
+              "path": [
+                "focus",
+                "stop",
+                "{{focusSessionId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Timetable",
+      "item": [
+        {
+          "name": "Create Slot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"day\": 1,\n  \"title\": \"Deep Work\",\n  \"start_time\": \"09:00\",\n  \"end_time\": \"10:00\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBase}}/timetable",
+              "host": [
+                "{{apiBase}}"
+              ],
+              "path": [
+                "timetable"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Timetable",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Get timetable success', function () { pm.response.to.have.status(200); });",
+                  "const data = pm.response.json();",
+                  "const slots = data.data || [];",
+                  "if (slots.length > 0 && slots[0].id) pm.collectionVariables.set('slotId', String(slots[0].id));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{apiBase}}/timetable",
+              "host": [
+                "{{apiBase}}"
+              ],
+              "path": [
+                "timetable"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Slot",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{apiBase}}/timetable/{{slotId}}",
+              "host": [
+                "{{apiBase}}"
+              ],
+              "path": [
+                "timetable",
+                "{{slotId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leaderboard",
+      "item": [
+        {
+          "name": "Get Leaderboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{apiBase}}/leaderboard",
+              "host": [
+                "{{apiBase}}"
+              ],
+              "path": [
+                "leaderboard"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "apiBase",
+      "value": "{{baseUrl}}/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "habitId",
+      "value": ""
+    },
+    {
+      "key": "taskId",
+      "value": ""
+    },
+    {
+      "key": "focusSessionId",
+      "value": ""
+    },
+    {
+      "key": "slotId",
+      "value": ""
+    }
+  ]
+}
