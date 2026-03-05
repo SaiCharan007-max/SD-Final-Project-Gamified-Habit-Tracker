@@ -9,6 +9,14 @@ const errorMiddleware = (err, req, res, next) => {
         });
     }
 
+    // Invalid UUID / invalid text representation
+    if (err.code === "22P02") {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid ID format"
+        });
+    }
+
     // Custom operational errors
     if (err.isOperational) {
         return res.status(err.statusCode).json({
@@ -20,10 +28,8 @@ const errorMiddleware = (err, req, res, next) => {
     // Unknown errors
     return res.status(500).json({
         success: false,
-        message: "Internal Server Error"
+        message: process.env.NODE_ENV === "development" ? err.message : "Internal Server Error"
     });
-
-    next();
 }
 
 export default errorMiddleware;

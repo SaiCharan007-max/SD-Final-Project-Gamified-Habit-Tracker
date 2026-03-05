@@ -3,14 +3,16 @@ import * as taskService from "../services/task.service.js";
 export const createTask = async (req, res, next) => {
     try {
         const userId = req.userId;
-        const { title, description, xp_reward } = req.body;
+        const { title, description, priority, due_date} = req.body;
 
         const task = await taskService.createTask({
             userId,
             title,
             description,
-            xp_reward
+            priority,
+            due_date
         });
+        
 
         return res.status(201).json({ data: task });
     } catch (err) {

@@ -27,7 +27,7 @@ export const getActiveSession = async (userId) => {
     return result.rows[0] || null;
 };
 
-export const endFocusSession = async ({ sessionId }) => {
+export const endFocusSession = async ({ userId, sessionId }) => {
     const result = await pool.query(
         `
         UPDATE focus_sessions
@@ -35,10 +35,10 @@ export const endFocusSession = async ({ sessionId }) => {
             end_time = NOW(),
             duration_minutes = EXTRACT(EPOCH FROM (NOW() - start_time))/60,
             completed = true
-        WHERE id=$1
+        WHERE id=$1 AND user_id=$2 AND completed=false
         RETURNING *;
         `,
-        [sessionId]
+        [sessionId, userId]
     );
 
     return result.rows[0] || null;
@@ -49,10 +49,9 @@ export const addXPForFocus = async ({ userId, xp }) => {
         `
         UPDATE user_stats
         SET 
-            total_points = total_points + $1,
-            level = FLOOR((total_points + $1)/100) + 1
+            total_points = total_points + $1
         WHERE user_id=$2
-        RETURNING total_points, level;
+        RETURNING total_points;
         `,
         [xp, userId]
     );

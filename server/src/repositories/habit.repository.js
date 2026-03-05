@@ -1,13 +1,15 @@
 import pool from "../config/db.js";
+import { randomUUID } from "crypto";
 
 export const createHabit = async ({ userId, name, frequency, target_count, current_streak, best_streak }) => {
+    const id = randomUUID();
     const result = await pool.query(
         `
-        INSERT INTO habits (user_id, name, frequency, target_count, current_streak, best_streak)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO habits (id, user_id, name, frequency, target_count, current_streak, best_streak)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING *;
         `,
-        [userId, name, frequency, target_count, current_streak, best_streak]
+        [id, userId, name, frequency, target_count, current_streak, best_streak]
     );
 
     return result.rows[0] || null;
@@ -16,9 +18,22 @@ export const createHabit = async ({ userId, name, frequency, target_count, curre
 export const getHabits = async (userId) => {
     const result = await pool.query(
         `
-        SELECT id, name, frequency, target_count, current_streak, best_streak, last_completed_date, created_at
-        FROM habits 
-        WHERE user_id=$1;
+        SELECT
+            h.id,
+            h.name,
+            h.frequency,
+            h.target_count,
+            h.current_streak,
+            h.best_streak,
+            h.last_completed_date,
+            h.created_at,
+            COALESCE(hl.count_done, 0) AS today_count,
+            (COALESCE(hl.count_done, 0) >= h.target_count) AS completed_today
+        FROM habits h
+        LEFT JOIN habit_logs hl
+          ON hl.habit_id = h.id
+         AND hl.completed_date = CURRENT_DATE
+        WHERE h.user_id=$1;
         `,
         [userId]
     );
@@ -51,13 +66,14 @@ export const getHabitLogByHabitId = async (habitId) => {
 };
 
 export const createHabitLog = async ({ habitId, countDone }) => {
+    const id = randomUUID();
     const result = await pool.query(
         `
-        INSERT INTO habit_logs (habit_id, count_done, completed_date)
-        VALUES ($1, $2, CURRENT_DATE)
+        INSERT INTO habit_logs (id, habit_id, count_done, completed_date)
+        VALUES ($1, $2, $3, CURRENT_DATE)
         RETURNING *;
         `,
-        [habitId, countDone]
+        [id, habitId, countDone]
     );
 
     return result.rows[0] || null;
@@ -107,10 +123,9 @@ export const updateUserStats = async ({ userId, xp }) => {
         `   
         UPDATE user_stats
         SET total_points = total_points + $1,
-            habits_completed = habits_completed + 1,
-            level = FLOOR((total_points + $1) / 100) + 1
+            habits_completed = habits_completed + 1
         WHERE user_id = $2  
-        RETURNING total_points, level;
+        RETURNING total_points;
         `,
         [xp, userId]
     );

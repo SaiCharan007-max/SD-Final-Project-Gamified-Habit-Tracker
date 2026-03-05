@@ -1,13 +1,13 @@
 import pool from "../config/db.js";
 
-export const createTask = async ({ userId, title, description, xp_reward }) => {
+export const createTask = async ({ userId, title, description, priority, due_date }) => {
     const result = await pool.query(
         `
-        INSERT INTO tasks (user_id, title, description, xp_reward, status)
-        VALUES ($1, $2, $3, $4, 'pending')
+        INSERT INTO tasks (user_id, title, description, priority, status, due_date)
+        VALUES ($1, $2, $3, $4, 'pending', $5)
         RETURNING *;
         `,
-        [userId, title, description, xp_reward]
+        [userId, title, description, priority, due_date]
     );
 
     return result.rows[0] || null;
@@ -16,7 +16,24 @@ export const createTask = async ({ userId, title, description, xp_reward }) => {
 export const getTasksByUser = async (userId) => {
     const result = await pool.query(
         `
-        SELECT id, title, description, xp_reward, status, created_at
+        SELECT
+            id,
+            title,
+            description,
+            CASE
+                WHEN priority = 3 THEN 'high'
+                WHEN priority = 2 THEN 'medium'
+                ELSE 'low'
+            END AS priority,
+            CASE
+                WHEN priority = 3 THEN 20
+                WHEN priority = 2 THEN 10
+                ELSE 5
+            END AS xp_reward,
+            status,
+            (status = 'completed') AS completed,
+            due_date,
+            created_at
         FROM tasks
         WHERE user_id = $1
         ORDER BY created_at DESC;
@@ -44,7 +61,9 @@ export const markTaskCompleted = async (taskId) => {
     const result = await pool.query(
         `
         UPDATE tasks
-        SET status = 'completed'
+        SET
+            status = 'completed',
+            completed_at = NOW()
         WHERE id = $1
         RETURNING *;
         `,
@@ -60,10 +79,9 @@ export const updateUserStatsFromTask = async ({ userId, xp }) => {
         UPDATE user_stats
         SET 
             total_points = total_points + $1,
-            tasks_completed = tasks_completed + 1,
-            level = FLOOR((total_points + $1)/100) + 1
+            tasks_completed = tasks_completed + 1
         WHERE user_id = $2
-        RETURNING total_points, level;
+        RETURNING total_points;
         `,
         [xp, userId]
     );

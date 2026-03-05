@@ -64,7 +64,3 @@ export const loginUser = async ({ email, password }) => {
         }
     };
 }
-
-
-
-// Level of the player is calculayed as floor(t_points/100)+1;
