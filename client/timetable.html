@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="dark">
+<head>
+    <meta charset="UTF-8" />
+    <title>HabitQuest — Timetable</title>
+    <script>
+        // Set theme BEFORE CSS loads to prevent flash
+        (function() {
+            try {
+                const prefs = JSON.parse(localStorage.getItem('hq-prefs') || '{}');
+                const html = document.documentElement;
+                if (prefs.mode)  html.setAttribute('data-mode',  prefs.mode);
+                if (prefs.theme) html.setAttribute('data-theme', prefs.theme);
+                const BG  = { default:'linear-gradient(135deg,#0a0a0a,#1a0a00)', space:'linear-gradient(135deg,#020817,#0a1628)', forest:'linear-gradient(135deg,#051a0f,#0a2e1a)', dusk:'linear-gradient(135deg,#1a0530,#0d0020)', steel:'linear-gradient(135deg,#0a0e1a,#141928)', crimson:'linear-gradient(135deg,#1a0505,#2a0a0a)' };
+                const BGL = { default:'linear-gradient(135deg,#f5f0eb,#ede4d8)', space:'linear-gradient(135deg,#e8f0f5,#d8e8f0)', forest:'linear-gradient(135deg,#e8f5ee,#d8f0e4)', dusk:'linear-gradient(135deg,#f0e8f5,#e8d8f0)', steel:'linear-gradient(135deg,#eaedf5,#d8dced)', crimson:'linear-gradient(135deg,#f5e8e8,#f0d8d8)' };
+                if (prefs.bg) {
+                    const isLight = prefs.mode === 'light';
+                    const g = (isLight ? BGL : BG)[prefs.bg] || (isLight ? BGL.default : BG.default);
+                    html.style.background = g;
+                    html.style.backgroundAttachment = 'fixed';
+                    html.style.setProperty('--bg-gradient', g);
+                }
+            } catch(e) {}
+        })();
+    </script>
+    <link rel="stylesheet" href="css/timetable.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+25&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="back-btn" onclick="window.location.href='dashboard.html'">
+                <i class="fa-solid fa-chevron-left"></i>
+            </div>
+            <div class="app-logo">HabitQuest</div>
+        </div>
+        <div class="page-title">SCHEDULE</div>
+        <div class="header-right">
+            <div class="week-nav">
+                <button class="nav-btn" onclick="changeWeek(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <span id="week-label">THIS WEEK</span>
+                <button class="nav-btn" onclick="changeWeek(1)"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            <button class="today-btn" onclick="goToday()">TODAY</button>
+        </div>
+    </header>
+
+    <!-- IN-APP REMINDER TOAST -->
+    <div class="reminder-toast" id="reminder-toast">
+        <div class="toast-icon"><i class="fa-solid fa-bell"></i></div>
+        <div class="toast-body">
+            <div class="toast-title" id="toast-title">Reminder</div>
+            <div class="toast-msg" id="toast-msg">Your task is starting now!</div>
+        </div>
+        <div class="toast-close" onclick="closeToast()"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+
+    <!-- SCHEDULE GRID -->
+    <div class="schedule-outer">
+        <div class="schedule-container">
+            <!-- Day headers -->
+            <div class="grid-header">
+                <div class="time-gutter"></div>
+                <div class="day-header" id="day-mon"><span class="day-name">MON</span><span class="day-num" id="num-0"></span></div>
+                <div class="day-header" id="day-tue"><span class="day-name">TUE</span><span class="day-num" id="num-1"></span></div>
+                <div class="day-header" id="day-wed"><span class="day-name">WED</span><span class="day-num" id="num-2"></span></div>
+                <div class="day-header" id="day-thu"><span class="day-name">THU</span><span class="day-num" id="num-3"></span></div>
+                <div class="day-header" id="day-fri"><span class="day-name">FRI</span><span class="day-num" id="num-4"></span></div>
+                <div class="day-header" id="day-sat"><span class="day-name">SAT</span><span class="day-num" id="num-5"></span></div>
+                <div class="day-header" id="day-sun"><span class="day-name">SUN</span><span class="day-num" id="num-6"></span></div>
+            </div>
+            <!-- Grid body -->
+            <div class="grid-body" id="grid-body"></div>
+        </div>
+    </div>
+
+    <!-- ADD / EDIT MODAL -->
+    <div class="modal-overlay" id="slot-modal">
+        <div class="modal-box">
+            <div class="modal-title" id="modal-title">ADD ACTIVITY</div>
+
+            <div class="modal-field">
+                <label class="modal-label">ACTIVITY NAME</label>
+                <input type="text" class="modal-input" id="slot-subject" placeholder="e.g. Study, Gym, Lunch..." />
+            </div>
+
+            <div class="modal-row">
+                <div class="modal-field">
+                    <label class="modal-label">START</label>
+                    <input type="time" class="modal-input" id="slot-start" />
+                </div>
+                <div class="modal-field">
+                    <label class="modal-label">END</label>
+                    <input type="time" class="modal-input" id="slot-end" />
+                </div>
+            </div>
+
+            <div class="modal-field">
+                <label class="modal-label">COLOR</label>
+                <div class="color-options" id="color-options">
+                    <div class="color-opt active" data-color="orange" style="background:#cb7341"></div>
+                    <div class="color-opt" data-color="cyan"   style="background:#00d4ff"></div>
+                    <div class="color-opt" data-color="green"  style="background:#00c896"></div>
+                    <div class="color-opt" data-color="purple" style="background:#a855f7"></div>
+                    <div class="color-opt" data-color="rose"   style="background:#f43f5e"></div>
+                    <div class="color-opt" data-color="gold"   style="background:#f59e0b"></div>
+                    <div class="color-opt" data-color="blue"   style="background:#3b82f6"></div>
+                    <div class="color-opt" data-color="pink"   style="background:#ec4899"></div>
+                </div>
+            </div>
+
+            <!-- Toggles row -->
+            <div class="modal-toggles">
+                <!-- Done checkbox -->
+                <div class="modal-toggle-item" onclick="toggleModalDone()">
+                    <div class="modal-checkbox" id="modal-done-check"></div>
+                    <span class="modal-toggle-label">MARK AS DONE</span>
+                </div>
+                <!-- Important star -->
+                <div class="modal-toggle-item" onclick="toggleModalImportant()">
+                    <div class="modal-star" id="modal-star"><i class="fa-regular fa-star"></i></div>
+                    <span class="modal-toggle-label">IMPORTANT</span>
+                </div>
+                <!-- Reminder bell -->
+                <div class="modal-toggle-item" onclick="toggleModalReminder()">
+                    <div class="modal-bell" id="modal-bell"><i class="fa-regular fa-bell"></i></div>
+                    <span class="modal-toggle-label">REMINDER</span>
+                </div>
+            </div>
+
+            <p class="modal-error" id="modal-error"></p>
+
+            <div class="modal-actions">
+                <button class="modal-btn delete-btn" id="delete-btn" onclick="deleteSlot()" style="display:none">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+                <button class="modal-btn cancel" onclick="closeModal()">CANCEL</button>
+                <button class="modal-btn confirm" onclick="saveSlot()">SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/timetable.js" type="module"></script>
+</body>
+</html>

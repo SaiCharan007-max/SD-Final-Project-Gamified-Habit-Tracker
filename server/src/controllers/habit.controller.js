@@ -13,14 +13,14 @@ export const createHabit = async (req, res, next) => {
         if (!frequency || frequency.trim() === "")
             return res.status(400).json({ message: "Frequency required" });
 
-        if (typeof target_count !== "number" && target_count > 0)
+        if (!Number.isInteger(target_count) || target_count <= 0)
             return res.status(400).json({ message: "Invalid target_count" });
 
         const result = await serviceHabit.createHabit({
             userId, name, frequency, target_count
         });
 
-        return res.status(200).json({
+        return res.status(201).json({
             data: result
         });
     } catch (err) {
