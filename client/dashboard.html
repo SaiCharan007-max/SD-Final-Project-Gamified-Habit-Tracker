@@ -5,7 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>HabitQuest Dashboard</title>
     <script>
-        (function(){try{const p=JSON.parse(localStorage.getItem('hq-prefs')||'{}'),h=document.documentElement;if(p.mode)h.setAttribute('data-mode',p.mode);if(p.theme)h.setAttribute('data-theme',p.theme);const BG={default:'linear-gradient(135deg,#111016,#1a1020)',space:'linear-gradient(135deg,#0a0f1e,#0d1830)',forest:'linear-gradient(135deg,#0a1a10,#0d2818)',dusk:'linear-gradient(135deg,#180820,#100018)',steel:'linear-gradient(135deg,#0e1220,#141a2e)',crimson:'linear-gradient(135deg,#180808,#220d0d)'};const BGL={default:'linear-gradient(135deg,#f5f0eb,#ede4d8)',space:'linear-gradient(135deg,#e8f0f5,#d8e8f0)',forest:'linear-gradient(135deg,#e8f5ee,#d8f0e4)',dusk:'linear-gradient(135deg,#f0e8f5,#e8d8f0)',steel:'linear-gradient(135deg,#eaedf5,#d8dced)',crimson:'linear-gradient(135deg,#f5e8e8,#f0d8d8)'};if(p.bg){const isL=p.mode==='light';const g=(isL?BGL:BG)[p.bg]||(isL?BGL.default:BG.default);h.style.background=g;h.style.backgroundAttachment='fixed';h.style.setProperty('--bg-gradient',g);}}catch(e){}})();
+        (function () {
+            try {
+                const prefs = JSON.parse(localStorage.getItem("hq-prefs") || "{}");
+                const root = document.documentElement;
+                if (prefs.mode) root.setAttribute("data-mode", prefs.mode);
+                if (prefs.theme) root.setAttribute("data-theme", prefs.theme);
+
+                const darkBg = {
+                    default: "linear-gradient(135deg,#111016,#1a1020)",
+                    space: "linear-gradient(135deg,#0a0f1e,#0d1830)",
+                    forest: "linear-gradient(135deg,#0a1a10,#0d2818)",
+                    dusk: "linear-gradient(135deg,#180820,#100018)",
+                    steel: "linear-gradient(135deg,#0e1220,#141a2e)",
+                    crimson: "linear-gradient(135deg,#180808,#220d0d)"
+                };
+                const lightBg = {
+                    default: "linear-gradient(135deg,#f5f0eb,#ede4d8)",
+                    space: "linear-gradient(135deg,#e8f0f5,#d8e8f0)",
+                    forest: "linear-gradient(135deg,#e8f5ee,#d8f0e4)",
+                    dusk: "linear-gradient(135deg,#f0e8f5,#e8d8f0)",
+                    steel: "linear-gradient(135deg,#eaedf5,#d8dced)",
+                    crimson: "linear-gradient(135deg,#f5e8e8,#f0d8d8)"
+                };
+
+                if (prefs.bg) {
+                    const isLight = prefs.mode === "light";
+                    const gradient = (isLight ? lightBg : darkBg)[prefs.bg] || (isLight ? lightBg.default : darkBg.default);
+                    root.style.background = gradient;
+                    root.style.backgroundAttachment = "fixed";
+                    root.style.setProperty("--bg-gradient", gradient);
+                }
+            } catch (error) {
+                // no-op
+            }
+        })();
     </script>
     <link rel="stylesheet" href="css/auth.css"/>
     <link rel="stylesheet" href="css/dashboard.css"/>
@@ -15,7 +49,6 @@
 </head>
 <body>
 
-    <!-- HEADER -->
     <header class="app-header">
         <div class="header-left">
             <div class="menu-icon" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></div>
@@ -28,7 +61,7 @@
         <div class="header-profile" onclick="window.location.href='profile.html'">
             <div class="profile-info">
                 <div class="profile-name" id="header-username">PLAYER</div>
-                <div class="profile-level" id="header-level">⚔ LEVEL 1</div>
+                <div class="profile-level" id="header-level">LEVEL 1</div>
             </div>
             <div class="profile-avatar" id="header-avatar">
                 <i class="fa-solid fa-user" id="header-avatar-icon"></i>
@@ -37,7 +70,6 @@
         </div>
     </header>
 
-    <!-- SIDEBAR -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
             <h2>MENU</h2>
@@ -46,6 +78,7 @@
         <ul class="sidebar-menu">
             <li class="active-nav"><i class="fa-solid fa-house"></i> Dashboard</li>
             <li onclick="window.location.href='habits.html'"><i class="fa-solid fa-list-check"></i> My Habits</li>
+            <li onclick="window.location.href='puzzle.html'"><i class="fa-solid fa-image"></i> Image Puzzle</li>
             <li onclick="window.location.href='timetable.html'"><i class="fa-solid fa-calendar-days"></i> Timetable</li>
             <li onclick="window.location.href='leaderboard.html'"><i class="fa-solid fa-trophy"></i> Leaderboard</li>
             <li onclick="window.location.href='focus.html'"><i class="fa-solid fa-brain"></i> Focus Session</li>
@@ -66,11 +99,11 @@
                 <span class="customize-label">THEME</span>
                 <div class="theme-presets">
                     <div class="preset-dot active" data-theme="orange" style="background:#cb7341" onclick="setTheme('orange')" title="Ember"></div>
-                    <div class="preset-dot" data-theme="cyan"   style="background:#00d4ff" onclick="setTheme('cyan')"   title="Deep Space"></div>
-                    <div class="preset-dot" data-theme="green"  style="background:#00ff9d" onclick="setTheme('green')"  title="Forest"></div>
+                    <div class="preset-dot" data-theme="cyan" style="background:#00d4ff" onclick="setTheme('cyan')" title="Deep Space"></div>
+                    <div class="preset-dot" data-theme="green" style="background:#00ff9d" onclick="setTheme('green')" title="Forest"></div>
                     <div class="preset-dot" data-theme="purple" style="background:#a855f7" onclick="setTheme('purple')" title="Nebula"></div>
-                    <div class="preset-dot" data-theme="rose"   style="background:#f43f5e" onclick="setTheme('rose')"   title="Crimson"></div>
-                    <div class="preset-dot" data-theme="gold"   style="background:#f59e0b" onclick="setTheme('gold')"   title="Gold"></div>
+                    <div class="preset-dot" data-theme="rose" style="background:#f43f5e" onclick="setTheme('rose')" title="Crimson"></div>
+                    <div class="preset-dot" data-theme="gold" style="background:#f59e0b" onclick="setTheme('gold')" title="Gold"></div>
                 </div>
             </div>
             <div class="customize-row">
@@ -83,12 +116,12 @@
             <div class="customize-row">
                 <span class="customize-label">BACKGROUND</span>
                 <div class="bg-presets" id="bg-presets">
-                    <div class="bg-swatch active" data-bg="default"  onclick="setBg('default')"  title="Default"></div>
-                    <div class="bg-swatch"        data-bg="space"    onclick="setBg('space')"    title="Space"></div>
-                    <div class="bg-swatch"        data-bg="forest"   onclick="setBg('forest')"   title="Forest"></div>
-                    <div class="bg-swatch"        data-bg="dusk"     onclick="setBg('dusk')"     title="Dusk"></div>
-                    <div class="bg-swatch"        data-bg="steel"    onclick="setBg('steel')"    title="Steel"></div>
-                    <div class="bg-swatch"        data-bg="crimson"  onclick="setBg('crimson')"  title="Crimson"></div>
+                    <div class="bg-swatch active" data-bg="default" onclick="setBg('default')" title="Default"></div>
+                    <div class="bg-swatch" data-bg="space" onclick="setBg('space')" title="Space"></div>
+                    <div class="bg-swatch" data-bg="forest" onclick="setBg('forest')" title="Forest"></div>
+                    <div class="bg-swatch" data-bg="dusk" onclick="setBg('dusk')" title="Dusk"></div>
+                    <div class="bg-swatch" data-bg="steel" onclick="setBg('steel')" title="Steel"></div>
+                    <div class="bg-swatch" data-bg="crimson" onclick="setBg('crimson')" title="Crimson"></div>
                 </div>
             </div>
         </div>
@@ -99,21 +132,17 @@
     </div>
     <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
 
-    <!-- MAIN GRID -->
     <div class="page-body">
-
-        <!-- LEFT: XP + TIMETABLE -->
         <div class="col col-left">
-            <!-- XP BAR -->
             <div class="dash-block xp-block">
                 <div class="xp-bar-header">
-                    <span class="xp-label">⚡ XP</span>
-                    <span class="xp-nums" id="xp-numbers">0 / 500 XP</span>
+                    <span class="xp-label">XP</span>
+                    <span class="xp-nums" id="xp-numbers">0 / 100 XP</span>
                     <span class="lvl-tag" id="header-level-tag">LVL 1</span>
                 </div>
                 <div class="xp-track"><div class="xp-fill" id="xp-fill"></div></div>
             </div>
-            <!-- TIMETABLE -->
+
             <div class="dash-block timetable-block" onclick="window.location.href='timetable.html'">
                 <div class="block-header">
                     <div class="block-icon"><i class="fa-solid fa-calendar-days"></i></div>
@@ -126,9 +155,7 @@
             </div>
         </div>
 
-        <!-- MIDDLE: STATS + STREAK + HABITS -->
         <div class="col col-mid">
-            <!-- STATS -->
             <div class="dash-block stats-block" onclick="window.location.href='stats.html'">
                 <div class="block-header">
                     <div class="block-icon"><i class="fa-solid fa-chart-line"></i></div>
@@ -142,20 +169,20 @@
                     <div class="stat-item"><div class="stat-value" id="stat-longest-streak">0</div><div class="stat-label">BEST STREAK</div></div>
                 </div>
             </div>
-            <!-- STREAK -->
+
             <div class="dash-block streak-block">
                 <div class="block-header">
                     <div class="block-icon"><i class="fa-solid fa-fire"></i></div>
-                    <span class="block-title">STREAK</span>
-                    <div class="streak-total-badge" id="streak-total-badge">0 🔥</div>
+                    <span class="block-title">REVEAL STREAK</span>
+                    <div class="streak-total-badge" id="streak-total-badge">0 DAYS</div>
                 </div>
                 <div class="week-circles" id="week-circles"></div>
                 <div class="streak-xp-row" id="streak-xp-row">
                     <i class="fa-solid fa-bolt"></i>
-                    <span id="streak-xp-text">Complete a habit to start your streak!</span>
+                    <span id="streak-xp-text">Complete a habit on a new day to start your reveal streak.</span>
                 </div>
             </div>
-            <!-- HABITS -->
+
             <div class="dash-block habits-block" onclick="handleHabitsBlockClick(event)">
                 <div class="block-header">
                     <div class="block-icon"><i class="fa-solid fa-list-check"></i></div>
@@ -171,25 +198,42 @@
             </div>
         </div>
 
-        <!-- RIGHT: ACHIEVEMENTS + FOCUS -->
         <div class="col col-right">
-            <!-- ACHIEVEMENTS -->
-            <div class="dash-block" onclick="window.location.href='achievements.html'">
+            <div class="dash-block puzzle-preview-block" onclick="window.location.href='puzzle.html'">
+                <div class="block-header">
+                    <div class="block-icon"><i class="fa-solid fa-image"></i></div>
+                    <span class="block-title">IMAGE PUZZLE</span>
+                    <i class="fa-solid fa-chevron-right block-arrow"></i>
+                </div>
+                <div class="puzzle-preview-media" id="puzzle-preview-media">
+                    <div class="puzzle-preview-topline">
+                        <span class="puzzle-preview-status" id="puzzle-preview-status">Loading</span>
+                        <span class="puzzle-preview-count" id="puzzle-preview-count">Checking board</span>
+                    </div>
+                    <div class="puzzle-preview-grid" id="puzzle-preview-grid"></div>
+                    <div class="puzzle-preview-bottomline">
+                        <div class="puzzle-preview-title" id="puzzle-preview-title">Puzzle board</div>
+                        <div class="puzzle-preview-action" id="puzzle-preview-action">Open board</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dash-block achievements-block" onclick="window.location.href='achievements.html'">
                 <div class="block-header">
                     <div class="block-icon"><i class="fa-solid fa-medal"></i></div>
                     <span class="block-title">ACHIEVEMENTS</span>
                     <i class="fa-solid fa-chevron-right block-arrow"></i>
                 </div>
                 <div class="badge-grid">
-                    <div class="badge-item">🔥</div>
-                    <div class="badge-item">⚡</div>
-                    <div class="badge-item locked">🏆</div>
-                    <div class="badge-item locked">💎</div>
-                    <div class="badge-item locked">🌟</div>
-                    <div class="badge-item locked">🎯</div>
+                    <div class="badge-item"><i class="fa-solid fa-fire"></i></div>
+                    <div class="badge-item"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="badge-item locked"><i class="fa-solid fa-trophy"></i></div>
+                    <div class="badge-item locked"><i class="fa-solid fa-gem"></i></div>
+                    <div class="badge-item locked"><i class="fa-solid fa-star"></i></div>
+                    <div class="badge-item locked"><i class="fa-solid fa-bullseye"></i></div>
                 </div>
             </div>
-            <!-- FOCUS -->
+
             <div class="dash-block focus-block" onclick="handleFocusBlockClick(event)">
                 <div class="block-header">
                     <div class="block-icon"><i class="fa-solid fa-brain"></i></div>
@@ -213,9 +257,9 @@
                 </div>
             </div>
         </div>
-
     </div>
 
+    <div class="dashboard-toast" id="dashboard-toast"></div>
 
     <script src="js/dashboard.js" type="module"></script>
 </body>

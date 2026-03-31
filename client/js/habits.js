@@ -207,6 +207,14 @@ async function toggleDone(id) {
 
         // Toasts
         if (data.xp_gained) showXpToast(data.xp_gained);
+        if (data.puzzle?.unlock_earned_today) {
+            showToast('Puzzle tile earned. Open the puzzle page to reveal it.');
+        } else if (data.puzzle?.streak?.can_unlock_now) {
+            showToast('A puzzle tile is ready to unlock.');
+        }
+        if (data.puzzle?.image_completed) {
+            showToast('Image completed. A new puzzle board is now active.');
+        }
         if (data.new_badges && data.new_badges.length > 0) {
             data.new_badges.forEach(b => showToast(`🏆 Badge unlocked: ${b.name}!`));
         }

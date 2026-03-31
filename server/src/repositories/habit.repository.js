@@ -118,6 +118,37 @@ export const updateHabit = async ({ id, current_streak, best_streak }) => {
     return result.rows[0] || null;
 };
 
+export const updateHabitDetails = async ({ id, userId, name, frequency, target_count }) => {
+    const result = await pool.query(
+        `
+        UPDATE habits
+        SET name = $1,
+            frequency = $2,
+            target_count = $3
+        WHERE id = $4
+          AND user_id = $5
+        RETURNING *;
+        `,
+        [name, frequency, target_count, id, userId]
+    );
+
+    return result.rows[0] || null;
+};
+
+export const deleteHabit = async ({ id, userId }) => {
+    const result = await pool.query(
+        `
+        DELETE FROM habits
+        WHERE id = $1
+          AND user_id = $2
+        RETURNING id;
+        `,
+        [id, userId]
+    );
+
+    return result.rows[0] || null;
+};
+
 export const updateUserStats = async ({ userId, xp }) => {
     const result = await pool.query(
         `   

@@ -1,3 +1,8 @@
+const API_ORIGIN =
+    window.location.protocol.startsWith("http") && /:(3000|3137)$/.test(window.location.origin)
+        ? window.location.origin
+        : "http://localhost:3000";
+
 document.addEventListener("DOMContentLoaded", () => {
 
     /* Login Page Logic */
@@ -33,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-                const response = await fetch("http://localhost:3137/api/auth/login", {
+                const response = await fetch(`${API_ORIGIN}/api/auth/login`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password })
@@ -139,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-                const response = await fetch("http://localhost:3137/api/auth/register", {
+                const response = await fetch(`${API_ORIGIN}/api/auth/register`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username, email, password })
