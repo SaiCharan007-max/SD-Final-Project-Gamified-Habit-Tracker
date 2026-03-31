@@ -10,6 +10,7 @@ import leaderboardRoutes from "./routes/leaderboard.routes.js";
 import timetableRoutes from "./routes/timetable.routes.js";
 import focusRoutes from "./routes/focus.routes.js";
 import gamificationRoutes from "./routes/gamification.routes.js";
+import puzzleRoutes from "./routes/puzzle.routes.js";
 
 // Error handler
 import errorMiddleware from "./middlewares/error.middleware.js";
@@ -34,6 +35,7 @@ app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/timetable", timetableRoutes);
 app.use("/api/focus", focusRoutes);
 app.use("/api/gamification", gamificationRoutes);
+app.use("/api/puzzle", puzzleRoutes);
 
 
 app.get("/health", (req, res) => {

@@ -1,6 +1,7 @@
 import AppError from "../utils/AppError.js";
 import * as repoHabit from "../repositories/habit.repository.js";
 import { evaluateAndAwardBadges } from "./gamification.service.js";
+import { recordDailyPuzzleProgress } from "./puzzle.service.js";
 
 export const createHabit = async ({ userId, name, frequency, target_count }) => {
     const allowedFreq = ["daily", "weekly"];
@@ -104,6 +105,7 @@ const updateStreakandXP = async ({ userId, habit }) => {
         userId,
         xp: xpCalculated
     });
+    const puzzle = await recordDailyPuzzleProgress(userId);
     const newBadges = await evaluateAndAwardBadges(userId);
     const level = Math.floor((updatedStats.total_points || 0) / 100) + 1;
 
@@ -113,6 +115,7 @@ const updateStreakandXP = async ({ userId, habit }) => {
         best_streak: newBestStreak,
         total_points: updatedStats.total_points,
         level,
-        new_badges: newBadges
+        new_badges: newBadges,
+        puzzle
     };
 };

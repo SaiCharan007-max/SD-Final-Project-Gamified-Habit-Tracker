@@ -3,6 +3,7 @@ import * as authRepository from "../repositories/auth.repository.js";
 import * as statsRepository from "../repositories/stats.repository.js";
 import AppError from "../utils/AppError.js";
 import jwt from "jsonwebtoken";
+import { initializePuzzleForUser } from "./puzzle.service.js";
 
 export const registerUser = async ({ name, email, password }) => {
 
@@ -25,6 +26,8 @@ export const registerUser = async ({ name, email, password }) => {
         habits_completed: 0,
         current_login_streak: 0
     });
+
+    await initializePuzzleForUser(result.id);
 
     return result;
 }
