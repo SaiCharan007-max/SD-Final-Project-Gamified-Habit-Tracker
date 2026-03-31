@@ -27,9 +27,26 @@ export const registerUser = async ({ name, email, password }) => {
         current_login_streak: 0
     });
 
-    await initializePuzzleForUser(result.id);
+    // Generate JWT token for immediate login after registration
+    const token = jwt.sign(
+        {
+            userId: result.id,
+        },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: process.env.JWT_EXPIRES_IN
+        }
+    );
 
-    return result;
+    return {
+        token,
+        userId: result.id,
+        user: {
+            id: result.id,
+            name: result.name,
+            email: result.email,
+        }
+    };
 }
 
 export const loginUser = async ({ email, password }) => {

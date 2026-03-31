@@ -148,7 +148,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 const result = await response.json();
 
                 if (response.ok) {
-                    window.location.href = "index.html";
+                    // Store token from registration response
+                    if (result.token) {
+                        localStorage.setItem("token", result.token);
+                        window.location.href = "dashboard.html";
+                    } else {
+                        // Fallback to login if no token
+                        window.location.href = "index.html";
+                    }
                 } else {
                     signupError.textContent =
                         result.message || "Signup failed.";
