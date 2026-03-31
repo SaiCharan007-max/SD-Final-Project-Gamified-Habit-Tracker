@@ -94,7 +94,7 @@ async function loadPlayerStats() {
     if (token) {
         try {
             const userId = JSON.parse(atob(token.split('.')[1])).userId;
-            const res    = await fetch('http://localhost:3137/api/leaderboard', {
+            const res    = await fetch(`${API_ORIGIN}/api/leaderboard`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
@@ -245,3 +245,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 window.setFilter   = setFilter;
 window.openDetail  = openDetail;
 window.closeDetail = closeDetail;
+const API_ORIGIN =
+    window.location.protocol.startsWith('http') && /:(3000|3137)$/.test(window.location.origin)
+        ? window.location.origin
+        : 'http://localhost:3000';

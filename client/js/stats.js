@@ -2,6 +2,11 @@
 //  HABITQUEST — STATS JS
 // ============================================
 
+const API_ORIGIN =
+    window.location.protocol.startsWith('http') && /:(3000|3137)$/.test(window.location.origin)
+        ? window.location.origin
+        : 'http://localhost:3000';
+
 const BADGES_ALL = [
     {emoji:'🔥',name:'ON FIRE',    desc:'7 habit streak'},
     {emoji:'⚡',name:'LIGHTNING',  desc:'1 focus session'},
@@ -33,7 +38,7 @@ function accentColor(){return getComputedStyle(document.documentElement).getProp
 function accentRgb(){return getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim()||'203,115,65';}
 
 function loadXp(stats){
-    const lvl=stats.level||1, xp=stats.xp||0, need=lvl*500, pct=Math.min(xp/need,1);
+    const lvl=stats.level||1, xp=stats.xp||0, currentXp=Math.max(xp-((lvl-1)*100),0), need=100, pct=Math.min(currentXp/need,1);
     const circ=2*Math.PI*50;
     setTimeout(()=>{
         document.getElementById('xp-ring-fill').style.strokeDashoffset=circ*(1-pct);
@@ -42,8 +47,8 @@ function loadXp(stats){
     document.getElementById('xp-val').textContent=xp;
     document.getElementById('xp-lvl-badge').textContent=`LVL ${lvl}`;
     document.getElementById('xp-title').textContent=LEVEL_TITLES[Math.min(lvl-1,LEVEL_TITLES.length-1)];
-    document.getElementById('xp-sub').textContent=`${xp} / ${need} XP`;
-    document.getElementById('xp-next').textContent=`${need-xp} XP TO LEVEL ${lvl+1}`;
+    document.getElementById('xp-sub').textContent=`${currentXp} / ${need} XP`;
+    document.getElementById('xp-next').textContent=`${need-currentXp} XP TO LEVEL ${lvl+1}`;
 }
 
 function loadOverview(stats,streak){
@@ -149,7 +154,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let xp = lsStats.xp||0, level = lsStats.level||1;
     try {
         const userId = JSON.parse(atob(token.split('.')[1])).userId;
-        const res    = await fetch('http://localhost:3137/api/leaderboard', {
+        const res    = await fetch(`${API_ORIGIN}/api/leaderboard`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {

@@ -23,6 +23,48 @@ export const getHabits = async (userId) => {
     return await repoHabit.getHabits(userId);
 };
 
+export const updateHabit = async ({ userId, habitId, name, frequency, target_count }) => {
+    const allowedFreq = ["daily", "weekly"];
+
+    if (!allowedFreq.includes(frequency))
+        throw new AppError("Invalid Frequency", 400);
+
+    const habit = await repoHabit.getHabitByUHId(userId, habitId);
+
+    if (!habit)
+        throw new AppError("Habit not found", 404);
+
+    const updatedHabit = await repoHabit.updateHabitDetails({
+        id: habitId,
+        userId,
+        name,
+        frequency,
+        target_count
+    });
+
+    if (!updatedHabit)
+        throw new AppError("Failed to update habit", 500);
+
+    return updatedHabit;
+};
+
+export const deleteHabit = async ({ userId, habitId }) => {
+    const habit = await repoHabit.getHabitByUHId(userId, habitId);
+
+    if (!habit)
+        throw new AppError("Habit not found", 404);
+
+    const deletedHabit = await repoHabit.deleteHabit({
+        id: habitId,
+        userId
+    });
+
+    if (!deletedHabit)
+        throw new AppError("Failed to delete habit", 500);
+
+    return deletedHabit;
+};
+
 export const completeHabit = async ({ userId, habitId }) => {
     const habit = await repoHabit.getHabitByUHId(userId, habitId);
 

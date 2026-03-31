@@ -2,7 +2,7 @@
 //  HABITQUEST — PROFILE JS
 // ============================================
 
-import { profileAPI } from './api.js';
+import { profileAPI, getApiOrigin } from './api.js';
 
 const BADGES_ALL = [
     { emoji:'🔥', name:'ON FIRE',       desc:'Complete 7 habits in a row',   earned:true  },
@@ -78,7 +78,7 @@ async function loadProfile() {
     // Pull real XP + level from backend leaderboard
     let xp = lsStats.xp||0, level = lsStats.level||1;
     try {
-        const res = await fetch('http://localhost:3137/api/leaderboard', {
+        const res = await fetch(`${getApiOrigin()}/api/leaderboard`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
@@ -98,12 +98,14 @@ async function loadProfile() {
 
     // Level badge + XP bar
     document.getElementById('level-badge').textContent = `⚔ LVL ${level}`;
-    const xpNeeded = level * 500;
+    const xpBase = (level - 1) * 100;
+    const xpNeeded = 100;
+    const levelXp = Math.max((xp || 0) - xpBase, 0);
     document.getElementById('xp-level-text').textContent = `LEVEL ${level}`;
     document.getElementById('xp-next-text').textContent  = `LEVEL ${level + 1} →`;
-    document.getElementById('xp-numbers').textContent    = `${xp} / ${xpNeeded} XP`;
+    document.getElementById('xp-numbers').textContent    = `${levelXp} / ${xpNeeded} XP`;
     setTimeout(() => {
-        document.getElementById('xp-fill').style.width = Math.min((xp / xpNeeded) * 100, 100) + '%';
+        document.getElementById('xp-fill').style.width = Math.min((levelXp / xpNeeded) * 100, 100) + '%';
     }, 400);
 
     // Stats grid
