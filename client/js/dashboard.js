@@ -90,128 +90,48 @@ async function loadUserData() {
 }
 
 // ── DATE HELPERS ──
-const PUZZLE_PIECES = 7;
 function getTodayKey(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;}
 function getDateKey(n){const d=new Date();d.setDate(d.getDate()-n);return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;}
 
-function getDefaultStreak(){
-    return { days:{}, current:0, longest:0, puzzle:{ totalPieces: PUZZLE_PIECES, unlocked:0, unlockedIndices: [] } };
-}
-
-function ensureStreak(streak){
-    if (!streak || typeof streak !== 'object') return getDefaultStreak();
-    if (!streak.days || typeof streak.days !== 'object') streak.days = {};
-    if (typeof streak.current !== 'number') streak.current = 0;
-    if (typeof streak.longest !== 'number') streak.longest = 0;
-    if (!streak.puzzle || typeof streak.puzzle !== 'object') streak.puzzle = { totalPieces: PUZZLE_PIECES, unlocked:0, unlockedIndices: [] };
-    if (typeof streak.puzzle.totalPieces !== 'number') streak.puzzle.totalPieces = PUZZLE_PIECES;
-    if (typeof streak.puzzle.unlocked !== 'number') streak.puzzle.unlocked = 0;
-    if (!Array.isArray(streak.puzzle.unlockedIndices)) streak.puzzle.unlockedIndices = [];
-    return streak;
-}
-
-function chooseRandomPuzzleIndex(streak){
-    const total = streak.puzzle.totalPieces;
-    const used = new Set(streak.puzzle.unlockedIndices);
-    const available = [...Array(total).keys()].filter(i => !used.has(i));
-    if (available.length === 0) return null;
-    return available[Math.floor(Math.random() * available.length)];
-}
-
-function unlockPuzzlePiece(streak){
-    if (streak.puzzle.unlocked >= streak.puzzle.totalPieces) return;
-    const idx = chooseRandomPuzzleIndex(streak);
-    if (idx === null) return;
-    streak.puzzle.unlockedIndices.push(idx);
-    streak.puzzle.unlocked = streak.puzzle.unlockedIndices.length;
-}
-
-function resetStreak(streak){
-    streak.days = {};
-    streak.current = 0;
-    streak.puzzle = { totalPieces: PUZZLE_PIECES, unlocked:0, unlockedIndices: [] };
-    return streak;
-}
-
-function renderPuzzle(streak){
-    const grid = document.getElementById('puzzle-grid');
-    const status = document.getElementById('puzzle-status');
-    if (!grid || !status) return;
-    const total = streak.puzzle.totalPieces;
-    const unlockedSet = new Set(streak.puzzle.unlockedIndices);
-    grid.innerHTML = '';
-
-    for (let i=0; i<total; i++) {
-        const piece = document.createElement('div');
-        piece.className = 'puzzle-piece' + (unlockedSet.has(i) ? ' unlocked' : '');
-        piece.textContent = unlockedSet.has(i) ? '🔓' : '❔';
-        grid.appendChild(piece);
-    }
-    if (streak.puzzle.unlocked === 0) {
-        status.textContent = 'Complete a streak day to unlock your first piece.';
-    } else if (streak.puzzle.unlocked < total) {
-        status.textContent = `${streak.puzzle.unlocked}/${total} pieces unlocked. Keep the streak alive!`;
-    } else {
-        status.textContent = 'Puzzle complete! You are unstoppable. The jigsaw is fully unlocked.';
-    }
-}
-
 // ── STREAK ──
 function loadStreak(){
-    let sd = ensureStreak(JSON.parse(localStorage.getItem('hq-streak') || '{}'));
-    const habits = JSON.parse(localStorage.getItem('habits') || '[]');
-    const tk = getTodayKey();
-    const yk = getDateKey(1);
-    const hasDoneToday = habits.some(h => h.done);
+    const sd    = JSON.parse(localStorage.getItem('hq-streak')||'{"days":{},"current":0,"longest":0}');
+    const habits = JSON.parse(localStorage.getItem('habits')||'[]');
+    const tk    = getTodayKey();
 
-    // Check for streak break: if last streak day is not yesterday and today is not done
-    if (!hasDoneToday) {
-        if (sd.current > 0 && !sd.days[yk]) {
-            sd = resetStreak(sd);
-        }
-    }
-
-    // Mark today as done and update streak/puzzle
-    if (hasDoneToday && !sd.days[tk]) {
-        const continuable = !!sd.days[yk];
-        if (!continuable) {
-            sd = resetStreak(sd);
-        }
+    // Mark today if any habit done
+    if (habits.some(h=>h.done) && !sd.days[tk]) {
         sd.days[tk] = true;
-        sd.current = (continuable ? sd.current + 1 : 1);
-        sd.longest = Math.max(sd.longest, sd.current);
-        unlockPuzzlePiece(sd);
+        let s=0; for(let i=0;i<=365;i++){if(sd.days[getDateKey(i)])s++;else break;}
+        sd.current = s; sd.longest = Math.max(sd.longest||0, s);
         localStorage.setItem('hq-streak', JSON.stringify(sd));
     }
 
-    document.getElementById('streak-total-badge').textContent = `${sd.current || 0} 🔥`;
-    document.getElementById('stat-longest-streak').textContent = sd.longest || 0;
+    const cur = sd.current||0;
+    document.getElementById('streak-total-badge').textContent = `${cur} 🔥`;
+    document.getElementById('stat-longest-streak').textContent = sd.longest||0;
 
     // Week circles
-    const today = new Date(), todayDow = today.getDay();
-    const monday = new Date(today); monday.setDate(today.getDate() - ((todayDow + 6) % 7));
-    const container = document.getElementById('week-circles'); container.innerHTML = '';
-    const wl = ['MO','TU','WE','TH','FR','SA','SU'];
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(monday); d.setDate(monday.getDate() + i);
-        const k = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-        const isToday = k === tk, completed = !!sd.days[k], isFuture = d > today && !isToday;
-        const div = document.createElement('div'); div.className = `day-circle${isToday?' today-label':''}`;
-        const ring = document.createElement('div'); ring.className = 'day-circle-ring';
-        if (completed) ring.classList.add('completed'); if (isToday) ring.classList.add('today');
-        if (isFuture) ring.style.opacity = '0.3';
-        ring.textContent = completed ? '✓' : wl[i];
-        const lbl = document.createElement('div'); lbl.className = 'day-circle-label'; lbl.textContent = wl[i];
+    const today=new Date(), todayDow=today.getDay();
+    const monday=new Date(today); monday.setDate(today.getDate()-((todayDow+6)%7));
+    const container=document.getElementById('week-circles'); container.innerHTML='';
+    const wl=['MO','TU','WE','TH','FR','SA','SU'];
+    for(let i=0;i<7;i++){
+        const d=new Date(monday); d.setDate(monday.getDate()+i);
+        const k=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+        const isToday=k===tk, completed=!!sd.days[k], isFuture=d>today&&!isToday;
+        const div=document.createElement('div'); div.className=`day-circle${isToday?' today-label':''}`;
+        const ring=document.createElement('div'); ring.className='day-circle-ring';
+        if(completed)ring.classList.add('completed'); if(isToday)ring.classList.add('today');
+        if(isFuture)ring.style.opacity='0.3'; ring.textContent=completed?'✓':wl[i];
+        const lbl=document.createElement('div'); lbl.className='day-circle-label'; lbl.textContent=wl[i];
         div.appendChild(ring); div.appendChild(lbl); container.appendChild(div);
     }
 
-    const xpText = document.getElementById('streak-xp-text'), xpRow = document.getElementById('streak-xp-row');
-    if (sd.current === 0) xpText.textContent = 'Complete a habit to start your streak!';
-    else if (sd.current < 7) xpText.textContent = `${sd.current} day streak! +${sd.current * 5} bonus XP!`;
-    else { xpText.textContent = `🔥 ${sd.current} days! You're on fire! +${sd.current * 5} XP`; xpRow.style.borderColor = 'var(--accent)'; }
-
-    renderPuzzle(sd);
-    localStorage.setItem('hq-streak', JSON.stringify(sd));
+    const xpText=document.getElementById('streak-xp-text'), xpRow=document.getElementById('streak-xp-row');
+    if(cur===0) xpText.textContent='Complete a habit to start your streak!';
+    else if(cur<7) xpText.textContent=`${cur} day streak! +${cur*5} bonus XP!`;
+    else{xpText.textContent=`🔥 ${cur} days! You're on fire! +${cur*5} XP`; xpRow.style.borderColor='var(--accent)';}
 }
 
 // ── HABITS PREVIEW ──
