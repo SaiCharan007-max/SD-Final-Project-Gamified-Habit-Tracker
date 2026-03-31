@@ -1,0 +1,616 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap');
+
+:root {
+    --ui-shell-1: #0c1118;
+    --ui-shell-2: #161d29;
+    --ui-surface-1: rgba(18, 24, 34, 0.84);
+    --ui-surface-2: rgba(10, 14, 21, 0.94);
+    --ui-header: rgba(10, 14, 20, 0.76);
+    --ui-sidebar: rgba(8, 12, 18, 0.9);
+    --ui-text: #f7f4ef;
+    --ui-text-soft: #c8d1dc;
+    --ui-muted: #93a1b1;
+    --ui-line: rgba(255, 255, 255, 0.07);
+    --ui-line-strong: rgba(255, 255, 255, 0.13);
+    --ui-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+    --ui-shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.18);
+    --ui-chip: rgba(255, 255, 255, 0.04);
+}
+
+html[data-mode="light"] {
+    --ui-shell-1: #f7f1e7;
+    --ui-shell-2: #ece3d6;
+    --ui-surface-1: rgba(255, 255, 255, 0.84);
+    --ui-surface-2: rgba(246, 240, 231, 0.96);
+    --ui-header: rgba(255, 252, 247, 0.82);
+    --ui-sidebar: rgba(255, 251, 246, 0.9);
+    --ui-text: #16202b;
+    --ui-text-soft: #425669;
+    --ui-muted: #75889a;
+    --ui-line: rgba(22, 32, 43, 0.08);
+    --ui-line-strong: rgba(22, 32, 43, 0.15);
+    --ui-shadow: 0 24px 60px rgba(27, 35, 46, 0.12);
+    --ui-shadow-soft: 0 12px 30px rgba(27, 35, 46, 0.08);
+    --ui-chip: rgba(22, 32, 43, 0.04);
+}
+
+html[data-mode],
+html[data-theme] {
+    --bg-card: linear-gradient(180deg, var(--ui-surface-1), var(--ui-surface-2)) !important;
+    --bg-header: var(--ui-header) !important;
+    --bg-sidebar: var(--ui-sidebar) !important;
+    --text-primary: var(--ui-text) !important;
+    --text-secondary: var(--ui-text-soft) !important;
+    --text-muted: var(--ui-muted) !important;
+    --accent-dim: rgba(var(--accent-rgb), 0.14) !important;
+    --accent-border: rgba(var(--accent-rgb), 0.24) !important;
+    --accent-glow: rgba(var(--accent-rgb), 0.22) !important;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    font-family: 'Space Grotesk', sans-serif !important;
+    color: var(--ui-text) !important;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background: transparent !important;
+    color: var(--ui-text) !important;
+}
+
+body::after {
+    content: "" !important;
+    position: fixed !important;
+    inset: 0 !important;
+    background:
+        radial-gradient(circle at 12% 16%, rgba(var(--accent-rgb), 0.16), transparent 28%),
+        radial-gradient(circle at 88% 10%, rgba(255, 255, 255, 0.06), transparent 24%),
+        linear-gradient(180deg, var(--ui-shell-1), var(--ui-shell-2)) !important;
+    z-index: -2 !important;
+}
+
+body::before {
+    content: "" !important;
+    position: fixed !important;
+    inset: 0 !important;
+    background:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px) !important;
+    background-size: 110px 110px !important;
+    mask-image: radial-gradient(circle at center, black, transparent 85%) !important;
+    opacity: 0.26 !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
+}
+
+::selection {
+    background: rgba(var(--accent-rgb), 0.22);
+    color: var(--ui-text);
+}
+
+a,
+.signup-text a,
+.customize-heading,
+.block-title,
+.page-title,
+.summary-label,
+.summary-lbl,
+.stat-label,
+.card-title,
+.eyebrow,
+.customize-label,
+.modal-label,
+.progress-label {
+    color: var(--ui-muted) !important;
+}
+
+a {
+    text-decoration: none;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+a:hover,
+.signup-text a:hover {
+    color: var(--accent) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+.app-logo,
+.panel-title,
+.modal-title,
+.login-info h1,
+.login-box h2,
+.username-display,
+.hero-status,
+.board-overlay-title,
+.page-title {
+    font-family: 'Cormorant Garamond', serif !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.03em !important;
+    color: var(--ui-text) !important;
+    text-transform: none !important;
+}
+
+.app-logo {
+    font-size: 2.25rem !important;
+    letter-spacing: 0.08em !important;
+    color: var(--ui-text) !important;
+    text-shadow: 0 8px 24px rgba(0, 0, 0, 0.16) !important;
+}
+
+.page-title,
+.block-title,
+.customize-heading,
+.customize-label,
+.summary-lbl,
+.summary-label,
+.eyebrow,
+.card-title,
+.stat-label,
+.progress-label {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.24em !important;
+    text-transform: uppercase !important;
+}
+
+.welcome-greet,
+.welcome-name,
+.profile-name,
+.profile-level,
+.xp-nums,
+.t-time,
+.focus-total,
+.habit-preview-meta,
+.progress-copy,
+.metric-row,
+.detail-row,
+.hero-copy,
+.board-footer span,
+.rule-list li,
+.empty-state,
+.empty-sub,
+.delete-msg,
+.signup-text,
+.login-info p {
+    color: var(--ui-text-soft) !important;
+}
+
+.app-header,
+.sidebar,
+.login-box,
+.dash-block,
+.card,
+.panel,
+.mission-card,
+.summary-item,
+.summary-card,
+.modal-box,
+.your-rank-bar,
+.podium-wrap,
+.list-wrap,
+.overall-progress,
+.identity-card,
+.history-item,
+.event-block,
+.habit-card,
+.ach-card,
+.badge-item,
+.stat-item,
+.xp-auto-row,
+.time-enabled-row,
+.time-drum-wrap,
+.rank-tabs,
+.your-rank-bar,
+.focus-wrap,
+.leaderboard-item,
+.podium-item,
+.podium-card,
+.settings-box,
+.history-box {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--ui-line-strong) !important;
+    box-shadow: var(--ui-shadow-soft) !important;
+    backdrop-filter: blur(22px) saturate(1.08) !important;
+}
+
+.app-header,
+.sidebar {
+    box-shadow: var(--ui-shadow) !important;
+}
+
+.app-header,
+.sidebar,
+.login-box,
+.dash-block,
+.card,
+.panel,
+.mission-card,
+.summary-item,
+.summary-card,
+.modal-box,
+.your-rank-bar,
+.podium-wrap,
+.list-wrap,
+.identity-card,
+.habit-card,
+.ach-card {
+    border-radius: 24px !important;
+}
+
+.summary-item,
+.summary-card,
+.stat-item,
+.badge-item,
+.history-item,
+.event-block,
+.goal-opt,
+.cat-opt,
+.xp-auto-row,
+.time-enabled-row,
+.time-drum-wrap,
+.rank-tab,
+.filter-btn,
+.mode-btn,
+.habit-action-btn,
+.secondary-btn,
+.ghost-btn,
+.focus-btn,
+.ctrl-btn.secondary,
+.history-btn,
+.back-btn,
+.edit-toggle-btn,
+.add-habit-btn,
+.color-opt,
+.preset-btn {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)) !important;
+    border: 1px solid var(--ui-line-strong) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--ui-shadow-soft) !important;
+}
+
+.theme-presets .preset-dot,
+.bg-swatch {
+    border: 1px solid var(--ui-line-strong) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--ui-shadow-soft) !important;
+}
+
+button,
+.btn,
+.add-btn,
+.primary-btn,
+.modal-btn.confirm,
+#login-btn,
+#register-btn,
+.ctrl-btn.primary,
+#play-btn,
+#random-unlock-btn {
+    background: linear-gradient(135deg, var(--accent), rgba(var(--accent-rgb), 0.72)) !important;
+    color: #091018 !important;
+    border: 1px solid rgba(var(--accent-rgb), 0.45) !important;
+    box-shadow: 0 14px 30px rgba(var(--accent-rgb), 0.22) !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.16em !important;
+    text-transform: uppercase !important;
+}
+
+button:hover,
+.btn:hover,
+.add-btn:hover,
+.primary-btn:hover,
+.modal-btn.confirm:hover,
+#login-btn:hover,
+#register-btn:hover,
+.ctrl-btn.primary:hover,
+#play-btn:hover,
+#random-unlock-btn:hover {
+    transform: translateY(-1px) !important;
+    filter: brightness(1.04) !important;
+    box-shadow: 0 18px 36px rgba(var(--accent-rgb), 0.26) !important;
+}
+
+.secondary-btn,
+.ghost-btn,
+.filter-btn,
+.rank-tab,
+.mode-btn,
+.habit-action-btn,
+.ctrl-btn.secondary,
+.focus-btn,
+.history-btn,
+.back-btn,
+.edit-toggle-btn,
+.add-habit-btn,
+.modal-btn.cancel,
+.modal-btn.danger,
+.cat-opt,
+.goal-opt,
+.color-opt {
+    color: var(--ui-text) !important;
+}
+
+.filter-btn.active,
+.rank-tab.active,
+.mode-btn.active,
+.cat-opt.active,
+.goal-opt.active,
+.color-opt.active,
+.preset-btn.active,
+.sidebar-menu li.active-nav,
+.habit-check.done,
+.day-circle-ring.completed {
+    background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.18), rgba(var(--accent-rgb), 0.08)) !important;
+    color: var(--accent) !important;
+    border-color: rgba(var(--accent-rgb), 0.36) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 16px 30px rgba(var(--accent-rgb), 0.1) !important;
+}
+
+input,
+textarea,
+select,
+.modal-input,
+.username-input,
+.bio-input {
+    background: rgba(255, 255, 255, 0.045) !important;
+    color: var(--ui-text) !important;
+    border: 1px solid var(--ui-line-strong) !important;
+    border-radius: 18px !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+}
+
+input::placeholder,
+textarea::placeholder,
+select::placeholder,
+.modal-input::placeholder,
+.username-input::placeholder,
+.bio-input::placeholder {
+    color: var(--ui-muted) !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.modal-input:focus,
+.username-input:focus,
+.bio-input:focus {
+    outline: none !important;
+    border-color: rgba(var(--accent-rgb), 0.4) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 0 0 4px rgba(var(--accent-rgb), 0.08) !important;
+}
+
+.xp-track,
+.progress-track,
+.progress-bar-wrap,
+.overall-bar-wrap,
+.modal-prog-bar-wrap,
+.ach-mini-bar {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid var(--ui-line) !important;
+    border-radius: 999px !important;
+}
+
+.xp-fill,
+.progress-fill,
+.progress-bar-fill,
+.overall-bar-fill,
+.modal-prog-fill,
+.ach-mini-fill,
+#xp-bar {
+    background: linear-gradient(90deg, var(--accent), rgba(var(--accent-rgb), 0.56)) !important;
+    box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.2) !important;
+}
+
+.block-icon,
+.profile-avatar,
+.avatar-circle,
+.rank-medal,
+.lvl-tag,
+.level-badge,
+.panel-pill,
+.total-badge,
+.streak-total-badge,
+.summary-value,
+.stat-value,
+.xp-auto-val,
+.hero-status {
+    box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.14) !important;
+}
+
+.block-icon,
+.profile-avatar,
+.avatar-circle,
+.rank-medal {
+    background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.18), rgba(var(--accent-rgb), 0.08)) !important;
+    border: 1px solid rgba(var(--accent-rgb), 0.3) !important;
+    color: var(--accent) !important;
+}
+
+.rank-tab,
+.filter-btn,
+.mode-btn,
+.cat-opt,
+.goal-opt,
+.color-opt,
+.secondary-btn,
+.ghost-btn,
+.focus-btn,
+.ctrl-btn.secondary,
+.habit-action-btn,
+.edit-toggle-btn,
+.history-btn,
+.back-btn,
+.add-habit-btn {
+    border-radius: 18px !important;
+}
+
+.summary-value,
+.stat-value,
+.xp-auto-val,
+.level-badge,
+.lvl-tag,
+.streak-total-badge,
+.hero-status,
+.timer-display,
+.focus-time-display,
+#xp-val {
+    color: var(--ui-text) !important;
+}
+
+.summary-value,
+.stat-value,
+.timer-display,
+.focus-time-display,
+#xp-val {
+    font-family: 'Cormorant Garamond', serif !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em !important;
+}
+
+.login-page {
+    min-height: 100vh !important;
+    align-items: center !important;
+}
+
+.login-layout {
+    gap: 40px !important;
+    padding-inline: clamp(20px, 4vw, 60px) !important;
+}
+
+.login-info {
+    padding: 80px 40px !important;
+}
+
+.login-info h1 {
+    font-size: clamp(3rem, 5vw, 4.4rem) !important;
+    line-height: 0.95 !important;
+    max-width: 680px !important;
+}
+
+.login-info p {
+    font-size: 1.05rem !important;
+    max-width: 560px !important;
+    line-height: 1.9 !important;
+}
+
+.login-box {
+    width: min(440px, 100%) !important;
+    padding: 40px 36px !important;
+}
+
+.login-box h2 {
+    font-size: 2.35rem !important;
+    margin-bottom: 22px !important;
+}
+
+.app-header,
+.sidebar-header,
+.header-profile,
+.login-box,
+.dash-block,
+.card,
+.panel,
+.mission-card,
+.summary-item,
+.summary-card,
+.modal-box,
+.your-rank-bar {
+    border-color: var(--ui-line-strong) !important;
+}
+
+.sidebar-menu li,
+.profile-info,
+.input-group label,
+.modal-label,
+.progress-count,
+.habit-meta,
+.habit-streak,
+.metric-row,
+.detail-row,
+.focus-total,
+.summary-lbl,
+.summary-label,
+.page-title,
+.block-title {
+    letter-spacing: 0.12em !important;
+}
+
+.sidebar-menu li:hover,
+.back-btn:hover,
+.history-btn:hover,
+.edit-toggle-btn:hover,
+.goal-opt:hover,
+.cat-opt:hover,
+.filter-btn:hover,
+.rank-tab:hover,
+.mode-btn:hover,
+.habit-action-btn:hover,
+.focus-btn:hover,
+.secondary-btn:hover,
+.ghost-btn:hover,
+.add-habit-btn:hover {
+    border-color: rgba(var(--accent-rgb), 0.34) !important;
+    color: var(--accent) !important;
+    box-shadow: 0 16px 30px rgba(var(--accent-rgb), 0.08) !important;
+}
+
+.empty-state,
+.empty-hint,
+.puzzle-preview-empty,
+.history-empty {
+    color: var(--ui-muted) !important;
+}
+
+.puzzle-preview-media,
+.puzzle-board,
+.ring-wrap,
+.avatar-ring {
+    box-shadow: var(--ui-shadow) !important;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.48), rgba(var(--accent-rgb), 0.22));
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.7), rgba(var(--accent-rgb), 0.32));
+}
+
+@media (max-width: 900px) {
+    .login-layout {
+        gap: 22px !important;
+        padding-inline: 18px !important;
+    }
+
+    .login-info {
+        padding: 24px 10px !important;
+    }
+}

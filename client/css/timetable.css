@@ -3,11 +3,11 @@
    ============================================ */
 
 :root {
-    --accent: #cb7341;
-    --accent-rgb: 203,115,65;
-    --accent-dim: rgba(203,115,65,0.12);
-    --accent-border: rgba(203,115,65,0.25);
-    --accent-glow: rgba(203,115,65,0.4);
+    --accent: #d4af37;
+    --accent-rgb: 212, 175, 55;
+    --accent-dim: rgba(212, 175, 55,0.12);
+    --accent-border: rgba(212, 175, 55,0.25);
+    --accent-glow: rgba(212, 175, 55,0.4);
     --bg-body: #0a0a0a;
     --bg-card: rgba(18,12,6,0.9);
     --bg-header: rgba(8,5,2,0.92);
@@ -276,7 +276,7 @@ body::after {
 .event-time { font-size:9px; color:rgba(255,255,255,0.7); letter-spacing:1px; margin-top:2px; white-space:nowrap; }
 
 /* Colors */
-.event-block[data-color="orange"] { background:linear-gradient(160deg,#cb7341,#a0521e); }
+.event-block[data-color="orange"] { background:linear-gradient(160deg,#d4af37,#a0521e); }
 .event-block[data-color="cyan"]   { background:linear-gradient(160deg,#00a8cc,#006688); }
 .event-block[data-color="green"]  { background:linear-gradient(160deg,#00c896,#008060); }
 .event-block[data-color="purple"] { background:linear-gradient(160deg,#a855f7,#7c3aed); }
