@@ -6,16 +6,28 @@ export const createTask = async ({ userId, title, description, priority, due_dat
     if (!title || title.trim() === "")
         throw new AppError("Task title required", 400);
 
-    const normalizedPriority = (priority || "low").toLowerCase();
-
+    // Handle both string and number priorities
+    let normalizedPriority;
+    
     const priorityMap = {
         low: 1,
         medium: 2,
-        high: 3
+        high: 3,
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        1: 1,
+        2: 2,
+        3: 3
     };
 
-    if (!priorityMap[normalizedPriority])
-        throw new AppError("Invalid priority. Use low, medium, or high", 400);
+    // Convert to string key for lookup
+    const priorityKey = typeof priority === 'number' ? priority : (priority || "low").toLowerCase();
+    
+    if (!priorityMap[priorityKey])
+        throw new AppError("Invalid priority. Use 1-3 or low/medium/high", 400);
+
+    normalizedPriority = typeof priority === 'number' ? priority : priorityMap[priorityKey];
 
     if (due_date && Number.isNaN(Date.parse(due_date)))
         throw new AppError("Invalid due_date format", 400);
@@ -24,7 +36,7 @@ export const createTask = async ({ userId, title, description, priority, due_dat
         userId,
         title,
         description,
-        priority: priorityMap[normalizedPriority],
+        priority: normalizedPriority,
         due_date
     });
 };
