@@ -352,8 +352,9 @@ async function saveSlot() {
             const newId = res.data?.id;
             if (newId) saveSlotExtras(newId, { color: selectedColor, done: modalDone, important: modalImportant, reminder: modalReminder });
         } catch(e) {
-            errEl.textContent = 'Failed to save. Try again.';
-            await loadAndRender(); return;
+            errEl.textContent = e?.message ? `Failed to save: ${e.message}` : 'Failed to save. Try again.';
+            await loadAndRender();
+            return;
         }
 
     } else {
@@ -369,7 +370,7 @@ async function saveSlot() {
             const newId = res.data?.id;
             if (newId) saveSlotExtras(newId, { color: selectedColor, done: modalDone, important: modalImportant, reminder: modalReminder });
         } catch(e) {
-            errEl.textContent = 'Failed to save. Try again.';
+            errEl.textContent = e?.message ? `Failed to save: ${e.message}` : 'Failed to save. Try again.';
             return;
         }
     }
