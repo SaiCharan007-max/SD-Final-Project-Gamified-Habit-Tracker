@@ -174,7 +174,23 @@ function loadTimetable() {
 }
 
 // ── MINI FOCUS WIDGET ──
-let focusRunning=false,focusSeconds=25*60,focusInterval=null,focusElapsed=0;
+// ── MINI FOCUS WIDGET ──
+// Reads last-used duration from localStorage (set by focus.js) so it always
+// matches whatever the user last configured on the focus page.
+function getFocusMins() {
+    return parseInt(localStorage.getItem('hq-focus-last-mins') || '15', 10);
+}
+let focusRunning=false, focusInterval=null, focusElapsed=0;
+let focusSeconds = getFocusMins() * 60;
+
+function initFocusDisplay() {
+    const mins = getFocusMins();
+    focusSeconds = mins * 60;
+    const m = Math.floor(focusSeconds/60).toString().padStart(2,'0');
+    const s = (focusSeconds%60).toString().padStart(2,'0');
+    document.getElementById('focus-display').textContent = `${m}:${s}`;
+}
+
 function toggleFocus(){
     if(focusRunning){
         clearInterval(focusInterval);focusRunning=false;
@@ -188,7 +204,8 @@ function toggleFocus(){
         document.getElementById('focus-ring').classList.add('running');
         focusInterval=setInterval(()=>{
             if(focusSeconds<=0){
-                clearInterval(focusInterval);focusRunning=false;focusElapsed+=25;
+                const mins = getFocusMins();
+                clearInterval(focusInterval);focusRunning=false;focusElapsed+=mins;
                 document.getElementById('focus-total-display').textContent=focusElapsed+' min';
                 document.getElementById('focus-display').textContent='DONE!';
                 document.getElementById('focus-icon').className='fa-solid fa-play';
@@ -203,7 +220,16 @@ function toggleFocus(){
         },1000);
     }
 }
-function resetFocus(){clearInterval(focusInterval);focusRunning=false;focusSeconds=25*60;document.getElementById('focus-display').textContent='25:00';document.getElementById('focus-icon').className='fa-solid fa-play';document.getElementById('focus-btn-text').textContent='START';document.getElementById('focus-ring').classList.remove('running');}
+function resetFocus(){
+    clearInterval(focusInterval);focusRunning=false;
+    focusSeconds = getFocusMins() * 60;
+    const m=Math.floor(focusSeconds/60).toString().padStart(2,'0');
+    const s=(focusSeconds%60).toString().padStart(2,'0');
+    document.getElementById('focus-display').textContent=`${m}:${s}`;
+    document.getElementById('focus-icon').className='fa-solid fa-play';
+    document.getElementById('focus-btn-text').textContent='START';
+    document.getElementById('focus-ring').classList.remove('running');
+}
 function handleFocusBlockClick(e){if(e.target.closest('.focus-btn'))return;window.location.href='focus.html';}
 
 // ── INIT ──
@@ -211,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
     requireAuth();
     loadPrefs();
     loadUserData();
+    initFocusDisplay();
 });
 
 // ── EXPOSE TO HTML ──

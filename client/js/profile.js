@@ -73,7 +73,7 @@ async function loadProfile() {
         document.getElementById('avatar-icon').style.display = 'none';
     }
 
-    // Pull real XP + level from backend
+    // Pull real XP + level from backend leaderboard
     let xp = lsStats.xp||0, level = lsStats.level||1;
     try {
         const res = await fetch('http://localhost:3137/api/leaderboard', {
@@ -134,23 +134,16 @@ function toggleEdit() {
     const label = document.getElementById('edit-label');
 
     btn.classList.toggle('editing', isEditing);
-    icon.className  = isEditing ? 'fa-solid fa-xmark' : 'fa-solid fa-pen';
+    icon.className    = isEditing ? 'fa-solid fa-xmark' : 'fa-solid fa-pen';
     label.textContent = isEditing ? 'CANCEL' : 'EDIT';
 
-    // Toggle username
-    document.getElementById('username-display').style.display = isEditing ? 'none' : 'block';
+    document.getElementById('username-display').style.display = isEditing ? 'none'  : 'block';
     document.getElementById('username-input').style.display   = isEditing ? 'block' : 'none';
-
-    // Toggle bio
-    document.getElementById('bio-display').style.display = isEditing ? 'none' : 'block';
-    document.getElementById('bio-input').style.display   = isEditing ? 'block' : 'none';
-    document.getElementById('bio-counter').style.display = isEditing ? 'block' : 'none';
-
-    // Toggle avatar overlay
+    document.getElementById('bio-display').style.display      = isEditing ? 'none'  : 'block';
+    document.getElementById('bio-input').style.display        = isEditing ? 'block' : 'none';
+    document.getElementById('bio-counter').style.display      = isEditing ? 'block' : 'none';
     document.getElementById('avatar-edit-overlay').style.display = isEditing ? 'flex' : 'none';
-
-    // Toggle save button
-    document.getElementById('save-profile-btn').style.display = isEditing ? 'block' : 'none';
+    document.getElementById('save-profile-btn').style.display    = isEditing ? 'block' : 'none';
 
     if (isEditing) {
         document.getElementById('username-input').focus();
@@ -160,12 +153,10 @@ function toggleEdit() {
 
 // ── BIO COUNTER ──
 function updateBioCounter() {
-    const input = document.getElementById('bio-input');
+    const input   = document.getElementById('bio-input');
     const counter = document.getElementById('bio-counter');
     counter.textContent = `${input.value.length} / 120`;
 }
-
-document.getElementById('bio-input').addEventListener('input', updateBioCounter);
 
 // ── SAVE PROFILE ──
 function saveProfile() {
@@ -177,11 +168,9 @@ function saveProfile() {
     profile.bio      = bio;
     localStorage.setItem('hq-profile', JSON.stringify(profile));
 
-    // Update display
     document.getElementById('username-display').textContent = username;
     document.getElementById('bio-display').textContent = bio || 'No bio yet. Click EDIT to add one.';
 
-    // Flash save button
     const btn = document.getElementById('save-profile-btn');
     btn.textContent = '✓ SAVED!';
     setTimeout(() => {
@@ -203,7 +192,6 @@ function handleAvatarUpload(event) {
     reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
-            // Compress: crop to square + resize to 200x200
             const canvas = document.createElement('canvas');
             canvas.width = 200; canvas.height = 200;
             const ctx = canvas.getContext('2d');
@@ -213,12 +201,10 @@ function handleAvatarUpload(event) {
             ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, 200, 200);
             const compressed = canvas.toDataURL('image/jpeg', 0.7);
 
-            // Show in UI
             document.getElementById('avatar-img').src = compressed;
             document.getElementById('avatar-img').style.display = 'block';
             document.getElementById('avatar-icon').style.display = 'none';
 
-            // Save to localStorage
             try {
                 const profile = JSON.parse(localStorage.getItem('hq-profile') || '{}');
                 profile.avatar = compressed;
@@ -230,7 +216,7 @@ function handleAvatarUpload(event) {
         img.src = e.target.result;
     };
     reader.readAsDataURL(file);
-    event.target.value = ''; // reset so same file can be picked again
+    event.target.value = '';
 }
 
 // ── KEYBOARD ──
@@ -243,4 +229,14 @@ document.addEventListener('keydown', e => {
 document.addEventListener('DOMContentLoaded', () => {
     loadThemePrefs();
     loadProfile();
+
+    // ── FIX: bio-input listener moved here so DOM is ready ──
+    const bioInput = document.getElementById('bio-input');
+    if (bioInput) bioInput.addEventListener('input', updateBioCounter);
 });
+
+// ── EXPOSE TO HTML onclick HANDLERS ──  ← THIS WAS THE MISSING FIX
+window.toggleEdit         = toggleEdit;
+window.saveProfile        = saveProfile;
+window.triggerAvatarUpload = triggerAvatarUpload;
+window.handleAvatarUpload = handleAvatarUpload;

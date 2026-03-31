@@ -166,8 +166,33 @@ function todayKey() {
 }
 
 function updateXpPreview() {
-    const mins = Math.floor(totalSeconds / 60);
-    document.getElementById('xp-preview-val').textContent = `+${calcXp(mins)} XP on completion`;
+    const mins    = Math.floor(totalSeconds / 60);
+    const preview = document.getElementById('xp-preview-val');
+    const wrap    = document.getElementById('xp-preview');
+
+    if (mins < 5) {
+        preview.textContent = '⚠ Under 5 min — no XP will be awarded';
+        wrap.style.color    = '#f43f5e';
+        wrap.style.opacity  = '1';
+    } else {
+        preview.textContent = `+${calcXp(mins)} XP on completion`;
+        wrap.style.color    = '';
+        wrap.style.opacity  = '';
+    }
+}
+
+// Also update warning inside the settings modal when preset/custom changes
+function updateSettingsWarning() {
+    const customVal = parseInt(document.getElementById('custom-min').value);
+    const mins      = customVal > 0 ? Math.min(240, customVal) : selectedPreset;
+    const warn      = document.getElementById('duration-warning');
+    if (!warn) return;
+    if (mins < 5) {
+        warn.textContent = '⚠ Sessions under 5 minutes earn no XP';
+        warn.style.display = 'block';
+    } else {
+        warn.style.display = 'none';
+    }
 }
 
 // ── TOAST ──
@@ -186,6 +211,7 @@ function openSettings() {
     document.getElementById('custom-min').value = '';
     document.getElementById('session-name-input').value = sessionName !== 'FOCUS SESSION' ? sessionName : '';
     pickPreset(selectedPreset, false);
+    updateSettingsWarning();
     document.getElementById('settings-modal').classList.add('active');
 }
 function closeSettings() {
@@ -196,6 +222,7 @@ function pickPreset(min, apply = true) {
     document.querySelectorAll('.preset-btn').forEach(b =>
         b.classList.toggle('active', parseInt(b.dataset.min) === min));
     if (apply) document.getElementById('custom-min').value = '';
+    updateSettingsWarning();
 }
 function applySettings() {
     const customVal = parseInt(document.getElementById('custom-min').value);
@@ -465,10 +492,17 @@ document.addEventListener('DOMContentLoaded', () => {
     loadThemePrefs();
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
-    totalSeconds = 15 * 60;
-    remaining    = totalSeconds;
+    // Restore last used duration if saved, otherwise default to 15
+    const savedMins = parseInt(localStorage.getItem('hq-focus-last-mins') || '15', 10);
+    selectedPreset = savedMins;
+    totalSeconds   = savedMins * 60;
+    remaining      = totalSeconds;
+    localStorage.setItem('hq-focus-last-mins', String(savedMins));
     updateDisplay();
     updateXpPreview();
+    // Live warning when typing custom minutes in settings modal
+    const customInput = document.getElementById('custom-min');
+    if (customInput) customInput.addEventListener('input', updateSettingsWarning);
 });
 
 // ── EXPOSE TO HTML ──

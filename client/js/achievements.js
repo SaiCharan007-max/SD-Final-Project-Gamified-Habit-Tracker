@@ -4,55 +4,55 @@
 
 // ── ACHIEVEMENT DEFINITIONS ──
 const ACHIEVEMENTS = [
-    // ── BADGES / GENERAL ──
-    { id:'first_habit',   icon:'🌱', name:'FIRST STEP',       desc:'Add your very first habit.',                        cat:'habit',  rarity:'common', xpBonus:20,
-      check: (s) => s.totalHabits >= 1,      progress: (s) => ({ val: Math.min(s.totalHabits,1), max:1 }) },
-    { id:'five_habits',   icon:'🪴', name:'GROWING',          desc:'Add 5 habits to your list.',                        cat:'habit',  rarity:'common', xpBonus:30,
-      check: (s) => s.totalHabits >= 5,      progress: (s) => ({ val: Math.min(s.totalHabits,5), max:5 }) },
-    { id:'ten_habits',    icon:'🌳', name:'HABIT FOREST',     desc:'Add 10 habits to your list.',                       cat:'habit',  rarity:'rare',   xpBonus:60,
-      check: (s) => s.totalHabits >= 10,     progress: (s) => ({ val: Math.min(s.totalHabits,10), max:10 }) },
-    { id:'habit_50',      icon:'💪', name:'WARRIOR',          desc:'Complete 50 habits total.',                         cat:'habit',  rarity:'rare',   xpBonus:80,
-      check: (s) => s.habitsCompleted >= 50, progress: (s) => ({ val: Math.min(s.habitsCompleted,50), max:50 }) },
-    { id:'habit_100',     icon:'🏅', name:'CENTURION',        desc:'Complete 100 habits total.',                        cat:'habit',  rarity:'epic',   xpBonus:150,
-      check: (s) => s.habitsCompleted >= 100,progress: (s) => ({ val: Math.min(s.habitsCompleted,100), max:100 }) },
-    { id:'formed_1',      icon:'⭐', name:'FORMED ONE',       desc:'Fully form your first habit (complete goal).',      cat:'habit',  rarity:'rare',   xpBonus:100,
-      check: (s) => s.habitsFormed >= 1,     progress: (s) => ({ val: Math.min(s.habitsFormed,1), max:1 }) },
-    { id:'formed_3',      icon:'🌟', name:'HABIT MASTER',     desc:'Fully form 3 habits.',                              cat:'habit',  rarity:'epic',   xpBonus:200,
-      check: (s) => s.habitsFormed >= 3,     progress: (s) => ({ val: Math.min(s.habitsFormed,3), max:3 }) },
-    { id:'formed_5',      icon:'🏆', name:'LEGEND BUILDER',  desc:'Fully form 5 habits.',                              cat:'habit',  rarity:'legend', xpBonus:400,
-      check: (s) => s.habitsFormed >= 5,     progress: (s) => ({ val: Math.min(s.habitsFormed,5), max:5 }) },
+    // ── HABIT ──
+    { id:'first_habit',   icon:'🌱', name:'FIRST STEP',      desc:'Add your very first habit.',                   cat:'habit',  rarity:'common', xpBonus:20,
+      check: (s) => s.totalHabits >= 1,       progress: (s) => ({ val: Math.min(s.totalHabits,1),       max:1   }) },
+    { id:'five_habits',   icon:'🪴', name:'GROWING',         desc:'Add 5 habits to your list.',                   cat:'habit',  rarity:'common', xpBonus:30,
+      check: (s) => s.totalHabits >= 5,       progress: (s) => ({ val: Math.min(s.totalHabits,5),       max:5   }) },
+    { id:'ten_habits',    icon:'🌳', name:'HABIT FOREST',    desc:'Add 10 habits to your list.',                  cat:'habit',  rarity:'rare',   xpBonus:60,
+      check: (s) => s.totalHabits >= 10,      progress: (s) => ({ val: Math.min(s.totalHabits,10),      max:10  }) },
+    { id:'habit_50',      icon:'💪', name:'WARRIOR',         desc:'Complete 50 habits total.',                    cat:'habit',  rarity:'rare',   xpBonus:80,
+      check: (s) => s.habitsCompleted >= 50,  progress: (s) => ({ val: Math.min(s.habitsCompleted,50),  max:50  }) },
+    { id:'habit_100',     icon:'🏅', name:'CENTURION',       desc:'Complete 100 habits total.',                   cat:'habit',  rarity:'epic',   xpBonus:150,
+      check: (s) => s.habitsCompleted >= 100, progress: (s) => ({ val: Math.min(s.habitsCompleted,100), max:100 }) },
+    { id:'formed_1',      icon:'⭐', name:'FORMED ONE',      desc:'Fully form your first habit (complete goal).', cat:'habit',  rarity:'rare',   xpBonus:100,
+      check: (s) => s.habitsFormed >= 1,      progress: (s) => ({ val: Math.min(s.habitsFormed,1),      max:1   }) },
+    { id:'formed_3',      icon:'🌟', name:'HABIT MASTER',    desc:'Fully form 3 habits.',                         cat:'habit',  rarity:'epic',   xpBonus:200,
+      check: (s) => s.habitsFormed >= 3,      progress: (s) => ({ val: Math.min(s.habitsFormed,3),      max:3   }) },
+    { id:'formed_5',      icon:'🏆', name:'LEGEND BUILDER',  desc:'Fully form 5 habits.',                         cat:'habit',  rarity:'legend', xpBonus:400,
+      check: (s) => s.habitsFormed >= 5,      progress: (s) => ({ val: Math.min(s.habitsFormed,5),      max:5   }) },
 
     // ── STREAK ──
-    { id:'streak_3',      icon:'🔥', name:'ON FIRE',          desc:'Maintain a 3-day streak.',                          cat:'streak', rarity:'common', xpBonus:20,
-      check: (s) => s.currentStreak >= 3,    progress: (s) => ({ val: Math.min(s.currentStreak,3), max:3 }) },
-    { id:'streak_7',      icon:'⚡', name:'LIGHTNING',        desc:'Maintain a 7-day streak.',                          cat:'streak', rarity:'common', xpBonus:50,
-      check: (s) => s.currentStreak >= 7,    progress: (s) => ({ val: Math.min(s.currentStreak,7), max:7 }) },
-    { id:'streak_14',     icon:'🌙', name:'TWO WEEKS',        desc:'Maintain a 14-day streak.',                         cat:'streak', rarity:'rare',   xpBonus:100,
-      check: (s) => s.longestStreak >= 14,   progress: (s) => ({ val: Math.min(s.longestStreak,14), max:14 }) },
-    { id:'streak_30',     icon:'💎', name:'DIAMOND',          desc:'Maintain a 30-day streak.',                         cat:'streak', rarity:'epic',   xpBonus:200,
-      check: (s) => s.longestStreak >= 30,   progress: (s) => ({ val: Math.min(s.longestStreak,30), max:30 }) },
-    { id:'streak_100',    icon:'👑', name:'CENTURY KING',     desc:'Maintain a 100-day streak.',                        cat:'streak', rarity:'legend', xpBonus:500,
-      check: (s) => s.longestStreak >= 100,  progress: (s) => ({ val: Math.min(s.longestStreak,100), max:100 }) },
+    { id:'streak_3',      icon:'🔥', name:'ON FIRE',         desc:'Maintain a 3-day streak.',                     cat:'streak', rarity:'common', xpBonus:20,
+      check: (s) => s.currentStreak >= 3,     progress: (s) => ({ val: Math.min(s.currentStreak,3),    max:3   }) },
+    { id:'streak_7',      icon:'⚡', name:'LIGHTNING',       desc:'Maintain a 7-day streak.',                     cat:'streak', rarity:'common', xpBonus:50,
+      check: (s) => s.currentStreak >= 7,     progress: (s) => ({ val: Math.min(s.currentStreak,7),    max:7   }) },
+    { id:'streak_14',     icon:'🌙', name:'TWO WEEKS',       desc:'Maintain a 14-day streak.',                    cat:'streak', rarity:'rare',   xpBonus:100,
+      check: (s) => s.longestStreak >= 14,    progress: (s) => ({ val: Math.min(s.longestStreak,14),   max:14  }) },
+    { id:'streak_30',     icon:'💎', name:'DIAMOND',         desc:'Maintain a 30-day streak.',                    cat:'streak', rarity:'epic',   xpBonus:200,
+      check: (s) => s.longestStreak >= 30,    progress: (s) => ({ val: Math.min(s.longestStreak,30),   max:30  }) },
+    { id:'streak_100',    icon:'👑', name:'CENTURY KING',    desc:'Maintain a 100-day streak.',                   cat:'streak', rarity:'legend', xpBonus:500,
+      check: (s) => s.longestStreak >= 100,   progress: (s) => ({ val: Math.min(s.longestStreak,100),  max:100 }) },
 
     // ── XP MILESTONES ──
-    { id:'xp_100',        icon:'✨', name:'SPARK',            desc:'Earn 100 XP.',                                      cat:'xp',     rarity:'common', xpBonus:0,
-      check: (s) => s.xp >= 100,            progress: (s) => ({ val: Math.min(s.xp,100), max:100 }) },
-    { id:'xp_500',        icon:'💫', name:'RISING STAR',      desc:'Earn 500 XP.',                                      cat:'xp',     rarity:'common', xpBonus:50,
-      check: (s) => s.xp >= 500,            progress: (s) => ({ val: Math.min(s.xp,500), max:500 }) },
-    { id:'xp_1000',       icon:'🚀', name:'THOUSAND',         desc:'Earn 1,000 XP.',                                    cat:'xp',     rarity:'rare',   xpBonus:100,
-      check: (s) => s.xp >= 1000,           progress: (s) => ({ val: Math.min(s.xp,1000), max:1000 }) },
-    { id:'xp_5000',       icon:'🌠', name:'STAR FORGED',      desc:'Earn 5,000 XP.',                                    cat:'xp',     rarity:'epic',   xpBonus:300,
-      check: (s) => s.xp >= 5000,           progress: (s) => ({ val: Math.min(s.xp,5000), max:5000 }) },
-    { id:'xp_10000',      icon:'🌌', name:'GALAXY BRAIN',     desc:'Earn 10,000 XP.',                                   cat:'xp',     rarity:'legend', xpBonus:1000,
-      check: (s) => s.xp >= 10000,          progress: (s) => ({ val: Math.min(s.xp,10000), max:10000 }) },
+    { id:'xp_100',        icon:'✨', name:'SPARK',           desc:'Earn 100 XP.',                                 cat:'xp',     rarity:'common', xpBonus:0,
+      check: (s) => s.xp >= 100,             progress: (s) => ({ val: Math.min(s.xp,100),             max:100   }) },
+    { id:'xp_500',        icon:'💫', name:'RISING STAR',     desc:'Earn 500 XP.',                                 cat:'xp',     rarity:'common', xpBonus:50,
+      check: (s) => s.xp >= 500,             progress: (s) => ({ val: Math.min(s.xp,500),             max:500   }) },
+    { id:'xp_1000',       icon:'🚀', name:'THOUSAND',        desc:'Earn 1,000 XP.',                               cat:'xp',     rarity:'rare',   xpBonus:100,
+      check: (s) => s.xp >= 1000,            progress: (s) => ({ val: Math.min(s.xp,1000),            max:1000  }) },
+    { id:'xp_5000',       icon:'🌠', name:'STAR FORGED',     desc:'Earn 5,000 XP.',                               cat:'xp',     rarity:'epic',   xpBonus:300,
+      check: (s) => s.xp >= 5000,            progress: (s) => ({ val: Math.min(s.xp,5000),            max:5000  }) },
+    { id:'xp_10000',      icon:'🌌', name:'GALAXY BRAIN',    desc:'Earn 10,000 XP.',                              cat:'xp',     rarity:'legend', xpBonus:1000,
+      check: (s) => s.xp >= 10000,           progress: (s) => ({ val: Math.min(s.xp,10000),           max:10000 }) },
 
     // ── LEVEL ──
-    { id:'level_5',       icon:'🎯', name:'FOCUSED',          desc:'Reach Level 5.',                                    cat:'xp',     rarity:'rare',   xpBonus:100,
-      check: (s) => s.level >= 5,           progress: (s) => ({ val: Math.min(s.level,5), max:5 }) },
-    { id:'level_10',      icon:'🏰', name:'CHAMPION',         desc:'Reach Level 10.',                                   cat:'xp',     rarity:'epic',   xpBonus:250,
-      check: (s) => s.level >= 10,          progress: (s) => ({ val: Math.min(s.level,10), max:10 }) },
-    { id:'level_20',      icon:'🌍', name:'GRANDMASTER',      desc:'Reach Level 20.',                                   cat:'xp',     rarity:'legend', xpBonus:500,
-      check: (s) => s.level >= 20,          progress: (s) => ({ val: Math.min(s.level,20), max:20 }) },
+    { id:'level_5',       icon:'🎯', name:'FOCUSED',         desc:'Reach Level 5.',                               cat:'xp',     rarity:'rare',   xpBonus:100,
+      check: (s) => s.level >= 5,            progress: (s) => ({ val: Math.min(s.level,5),            max:5     }) },
+    { id:'level_10',      icon:'🏰', name:'CHAMPION',        desc:'Reach Level 10.',                              cat:'xp',     rarity:'epic',   xpBonus:250,
+      check: (s) => s.level >= 10,           progress: (s) => ({ val: Math.min(s.level,10),           max:10    }) },
+    { id:'level_20',      icon:'🌍', name:'GRANDMASTER',     desc:'Reach Level 20.',                              cat:'xp',     rarity:'legend', xpBonus:500,
+      check: (s) => s.level >= 20,           progress: (s) => ({ val: Math.min(s.level,20),           max:20    }) },
 ];
 
 const RARITY_LABELS = { common:'COMMON', rare:'RARE', epic:'EPIC', legend:'LEGENDARY' };
@@ -74,27 +74,45 @@ function loadThemePrefs() {
     } catch(e) {}
 }
 
-// ── LOAD PLAYER STATS ──
-function loadPlayerStats() {
-    const stats    = JSON.parse(localStorage.getItem('stats')    || '{}');
-    const streak   = JSON.parse(localStorage.getItem('hq-streak')|| '{}');
-    const habits   = JSON.parse(localStorage.getItem('habits')   || '[]');
+// ── LOAD PLAYER STATS (with backend XP/level) ──
+async function loadPlayerStats() {
+    const token = localStorage.getItem('token');
 
-    // Count total completions from habit history
-    const history  = JSON.parse(localStorage.getItem('hq-habit-history') || '{}');
+    const streak  = JSON.parse(localStorage.getItem('hq-streak') || '{}');
+    const habits  = JSON.parse(localStorage.getItem('habits')    || '[]');
+    const history = JSON.parse(localStorage.getItem('hq-habit-history') || '{}');
+    const lsStats = JSON.parse(localStorage.getItem('stats') || '{}');
+
     const habitsCompleted = Object.values(history).reduce((a,b) => a+b, 0);
+    const habitsFormed    = habits.filter(h => (h.doneDates||[]).length >= (h.goalDays||21)).length;
 
-    // Count fully formed habits
-    const habitsFormed = habits.filter(h => (h.doneDates||[]).length >= (h.goalDays||21)).length;
+    // Start with localStorage values as fallback
+    let xp    = lsStats.xp    || 0;
+    let level = lsStats.level || 1;
+
+    // Pull real XP + level from backend
+    if (token) {
+        try {
+            const userId = JSON.parse(atob(token.split('.')[1])).userId;
+            const res    = await fetch('http://localhost:3137/api/leaderboard', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                const me   = (data.data||[]).find(u => u.userId===userId||u.id===userId);
+                if (me) { xp = me.total_points||0; level = me.level||1; }
+            }
+        } catch(e) { /* use localStorage fallback */ }
+    }
 
     playerStats = {
-        xp:              stats.xp            || 0,
-        level:           stats.level         || 1,
+        xp,
+        level,
         totalHabits:     habits.length,
-        habitsCompleted: habitsCompleted,
-        habitsFormed:    habitsFormed,
-        currentStreak:   streak.current      || 0,
-        longestStreak:   streak.longest      || 0,
+        habitsCompleted,
+        habitsFormed,
+        currentStreak:   streak.current || 0,
+        longestStreak:   streak.longest || 0,
     };
 }
 
@@ -116,7 +134,6 @@ function render() {
 
     grid.innerHTML = filtered.map(a => renderCard(a)).join('');
 
-    // animate bars
     setTimeout(() => {
         document.querySelectorAll('.ach-mini-fill').forEach(el => {
             el.style.width = el.dataset.pct + '%';
@@ -127,9 +144,9 @@ function render() {
 }
 
 function renderCard(a) {
-    const earned  = isEarned(a);
-    const prog    = a.progress(playerStats);
-    const pct     = Math.min((prog.val / prog.max) * 100, 100);
+    const earned = isEarned(a);
+    const prog   = a.progress(playerStats);
+    const pct    = Math.min((prog.val / prog.max) * 100, 100);
 
     return `
     <div class="rarity-${a.rarity}">
@@ -179,13 +196,13 @@ function openDetail(id) {
     const prog   = a.progress(playerStats);
     const pct    = Math.min((prog.val / prog.max) * 100, 100);
 
-    document.getElementById('m-icon').textContent  = a.icon;
-    document.getElementById('m-name').textContent  = a.name;
-    document.getElementById('m-desc').textContent  = a.desc;
+    document.getElementById('m-icon').textContent = a.icon;
+    document.getElementById('m-name').textContent = a.name;
+    document.getElementById('m-desc').textContent = a.desc;
 
     const statusEl = document.getElementById('m-status');
-    statusEl.textContent  = earned ? '✅ EARNED' : '🔒 LOCKED';
-    statusEl.className    = 'modal-status ' + (earned ? 'earned' : 'locked');
+    statusEl.textContent = earned ? '✅ EARNED' : '🔒 LOCKED';
+    statusEl.className   = 'modal-status ' + (earned ? 'earned' : 'locked');
 
     const progWrap = document.getElementById('m-progress-wrap');
     if (prog.max > 1 || !earned) {
@@ -212,8 +229,19 @@ document.addEventListener('keydown', e => {
 });
 
 // ── INIT ──
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // ── FIX: requireAuth guard ──
+    const token = localStorage.getItem('token');
+    if (!token) { window.location.href = 'index.html'; return; }
+
     loadThemePrefs();
-    loadPlayerStats();
+
+    // ── FIX: await backend XP before rendering ──
+    await loadPlayerStats();
     render();
 });
+
+// ── EXPOSE TO HTML ──
+window.setFilter   = setFilter;
+window.openDetail  = openDetail;
+window.closeDetail = closeDetail;
