@@ -12,10 +12,8 @@ export const register = async (req, res, next) => {
             });
         }
 
-        const user = await registerUser({ name: username, email, password });
-        return res.status(201).json({
-            data: user
-        });
+        const result = await registerUser({ name: username, email, password });
+        return res.status(201).json(result);
     } catch (err) {
         next(err);
     }

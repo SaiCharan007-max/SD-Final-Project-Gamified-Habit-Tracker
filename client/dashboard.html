@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="dark">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>HabitQuest Dashboard</title>
+    <script>
+        (function(){try{const p=JSON.parse(localStorage.getItem('hq-prefs')||'{}'),h=document.documentElement;if(p.mode)h.setAttribute('data-mode',p.mode);if(p.theme)h.setAttribute('data-theme',p.theme);const BG={default:'linear-gradient(135deg,#111016,#1a1020)',space:'linear-gradient(135deg,#0a0f1e,#0d1830)',forest:'linear-gradient(135deg,#0a1a10,#0d2818)',dusk:'linear-gradient(135deg,#180820,#100018)',steel:'linear-gradient(135deg,#0e1220,#141a2e)',crimson:'linear-gradient(135deg,#180808,#220d0d)'};const BGL={default:'linear-gradient(135deg,#f5f0eb,#ede4d8)',space:'linear-gradient(135deg,#e8f0f5,#d8e8f0)',forest:'linear-gradient(135deg,#e8f5ee,#d8f0e4)',dusk:'linear-gradient(135deg,#f0e8f5,#e8d8f0)',steel:'linear-gradient(135deg,#eaedf5,#d8dced)',crimson:'linear-gradient(135deg,#f5e8e8,#f0d8d8)'};if(p.bg){const isL=p.mode==='light';const g=(isL?BGL:BG)[p.bg]||(isL?BGL.default:BG.default);h.style.background=g;h.style.backgroundAttachment='fixed';h.style.setProperty('--bg-gradient',g);}}catch(e){}})();
+    </script>
+    <link rel="stylesheet" href="css/auth.css"/>
+    <link rel="stylesheet" href="css/dashboard.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+25&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="menu-icon" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></div>
+            <div class="app-logo">HabitQuest</div>
+        </div>
+        <div class="header-center">
+            <div class="welcome-greet" id="greet-text">GOOD MORNING</div>
+            <div class="welcome-name" id="welcome-username">PLAYER</div>
+        </div>
+        <div class="header-profile" onclick="window.location.href='profile.html'">
+            <div class="profile-info">
+                <div class="profile-name" id="header-username">PLAYER</div>
+                <div class="profile-level" id="header-level">⚔ LEVEL 1</div>
+            </div>
+            <div class="profile-avatar" id="header-avatar">
+                <i class="fa-solid fa-user" id="header-avatar-icon"></i>
+                <img id="header-avatar-img" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;"/>
+            </div>
+        </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>MENU</h2>
+            <i class="fa-solid fa-xmark close-btn" onclick="toggleSidebar()"></i>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="active-nav"><i class="fa-solid fa-house"></i> Dashboard</li>
+            <li onclick="window.location.href='habits.html'"><i class="fa-solid fa-list-check"></i> My Habits</li>
+            <li onclick="window.location.href='timetable.html'"><i class="fa-solid fa-calendar-days"></i> Timetable</li>
+            <li onclick="window.location.href='leaderboard.html'"><i class="fa-solid fa-trophy"></i> Leaderboard</li>
+            <li onclick="window.location.href='focus.html'"><i class="fa-solid fa-brain"></i> Focus Session</li>
+            <li onclick="window.location.href='achievements.html'"><i class="fa-solid fa-medal"></i> Achievements</li>
+            <li onclick="window.location.href='stats.html'"><i class="fa-solid fa-chart-line"></i> Stats</li>
+        </ul>
+        <div class="sidebar-divider"></div>
+        <div class="customize-panel">
+            <div class="customize-heading"><i class="fa-solid fa-palette"></i> CUSTOMIZE</div>
+            <div class="customize-row">
+                <span class="customize-label">MODE</span>
+                <div class="mode-toggle">
+                    <button class="mode-btn active" id="btn-dark" onclick="setMode('dark')"><i class="fa-solid fa-moon"></i> DARK</button>
+                    <button class="mode-btn" id="btn-light" onclick="setMode('light')"><i class="fa-solid fa-sun"></i> LIGHT</button>
+                </div>
+            </div>
+            <div class="customize-row">
+                <span class="customize-label">THEME</span>
+                <div class="theme-presets">
+                    <div class="preset-dot active" data-theme="orange" style="background:#cb7341" onclick="setTheme('orange')" title="Ember"></div>
+                    <div class="preset-dot" data-theme="cyan"   style="background:#00d4ff" onclick="setTheme('cyan')"   title="Deep Space"></div>
+                    <div class="preset-dot" data-theme="green"  style="background:#00ff9d" onclick="setTheme('green')"  title="Forest"></div>
+                    <div class="preset-dot" data-theme="purple" style="background:#a855f7" onclick="setTheme('purple')" title="Nebula"></div>
+                    <div class="preset-dot" data-theme="rose"   style="background:#f43f5e" onclick="setTheme('rose')"   title="Crimson"></div>
+                    <div class="preset-dot" data-theme="gold"   style="background:#f59e0b" onclick="setTheme('gold')"   title="Gold"></div>
+                </div>
+            </div>
+            <div class="customize-row">
+                <span class="customize-label">CUSTOM COLOR</span>
+                <div class="color-picker-wrap">
+                    <input type="color" id="accent-picker" value="#cb7341" oninput="setCustomAccent(this.value)"/>
+                    <span class="color-hex" id="color-hex">#CB7341</span>
+                </div>
+            </div>
+            <div class="customize-row">
+                <span class="customize-label">BACKGROUND</span>
+                <div class="bg-presets" id="bg-presets">
+                    <div class="bg-swatch active" data-bg="default"  onclick="setBg('default')"  title="Default"></div>
+                    <div class="bg-swatch"        data-bg="space"    onclick="setBg('space')"    title="Space"></div>
+                    <div class="bg-swatch"        data-bg="forest"   onclick="setBg('forest')"   title="Forest"></div>
+                    <div class="bg-swatch"        data-bg="dusk"     onclick="setBg('dusk')"     title="Dusk"></div>
+                    <div class="bg-swatch"        data-bg="steel"    onclick="setBg('steel')"    title="Steel"></div>
+                    <div class="bg-swatch"        data-bg="crimson"  onclick="setBg('crimson')"  title="Crimson"></div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-divider"></div>
+        <ul class="sidebar-menu">
+            <li onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</li>
+        </ul>
+    </div>
+    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- MAIN GRID -->
+    <div class="page-body">
+
+        <!-- LEFT: XP + TIMETABLE -->
+        <div class="col col-left">
+            <!-- XP BAR -->
+            <div class="dash-block xp-block">
+                <div class="xp-bar-header">
+                    <span class="xp-label">⚡ XP</span>
+                    <span class="xp-nums" id="xp-numbers">0 / 500 XP</span>
+                    <span class="lvl-tag" id="header-level-tag">LVL 1</span>
+                </div>
+                <div class="xp-track"><div class="xp-fill" id="xp-fill"></div></div>
+            </div>
+            <!-- TIMETABLE -->
+            <div class="dash-block timetable-block" onclick="window.location.href='timetable.html'">
+                <div class="block-header">
+                    <div class="block-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                    <span class="block-title">TODAY'S TIMETABLE</span>
+                    <i class="fa-solid fa-chevron-right block-arrow"></i>
+                </div>
+                <div class="block-scroll" id="timetable-list">
+                    <div class="empty-state"><i class="fa-regular fa-calendar"></i><span>No schedule yet</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MIDDLE: STATS + STREAK + HABITS -->
+        <div class="col col-mid">
+            <!-- STATS -->
+            <div class="dash-block stats-block" onclick="window.location.href='stats.html'">
+                <div class="block-header">
+                    <div class="block-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <span class="block-title">STATS</span>
+                    <i class="fa-solid fa-chevron-right block-arrow"></i>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item"><div class="stat-value" id="stat-habits">0</div><div class="stat-label">HABITS</div></div>
+                    <div class="stat-item"><div class="stat-value" id="stat-badges">0</div><div class="stat-label">BADGES</div></div>
+                    <div class="stat-item"><div class="stat-value" id="stat-focus">0h</div><div class="stat-label">FOCUS</div></div>
+                    <div class="stat-item"><div class="stat-value" id="stat-longest-streak">0</div><div class="stat-label">BEST STREAK</div></div>
+                </div>
+            </div>
+            <!-- STREAK -->
+            <div class="dash-block streak-block">
+                <div class="block-header">
+                    <div class="block-icon"><i class="fa-solid fa-fire"></i></div>
+                    <span class="block-title">STREAK</span>
+                    <div class="streak-total-badge" id="streak-total-badge">0 🔥</div>
+                </div>
+                <div class="week-circles" id="week-circles"></div>
+                <div class="streak-xp-row" id="streak-xp-row">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span id="streak-xp-text">Complete a habit to start your streak!</span>
+                </div>
+            </div>
+            <!-- HABITS -->
+            <div class="dash-block habits-block" onclick="handleHabitsBlockClick(event)">
+                <div class="block-header">
+                    <div class="block-icon"><i class="fa-solid fa-list-check"></i></div>
+                    <span class="block-title">MY HABITS</span>
+                    <i class="fa-solid fa-chevron-right block-arrow"></i>
+                </div>
+                <div class="block-scroll" id="habit-list">
+                    <div class="empty-hint">No habits yet.</div>
+                </div>
+                <button class="add-habit-btn" onclick="event.stopPropagation();window.location.href='habits.html'">
+                    <i class="fa-solid fa-plus"></i> ADD HABIT
+                </button>
+            </div>
+        </div>
+
+        <!-- RIGHT: ACHIEVEMENTS + FOCUS -->
+        <div class="col col-right">
+            <!-- ACHIEVEMENTS -->
+            <div class="dash-block" onclick="window.location.href='achievements.html'">
+                <div class="block-header">
+                    <div class="block-icon"><i class="fa-solid fa-medal"></i></div>
+                    <span class="block-title">ACHIEVEMENTS</span>
+                    <i class="fa-solid fa-chevron-right block-arrow"></i>
+                </div>
+                <div class="badge-grid">
+                    <div class="badge-item">🔥</div>
+                    <div class="badge-item">⚡</div>
+                    <div class="badge-item locked">🏆</div>
+                    <div class="badge-item locked">💎</div>
+                    <div class="badge-item locked">🌟</div>
+                    <div class="badge-item locked">🎯</div>
+                </div>
+            </div>
+            <!-- FOCUS -->
+            <div class="dash-block focus-block" onclick="handleFocusBlockClick(event)">
+                <div class="block-header">
+                    <div class="block-icon"><i class="fa-solid fa-brain"></i></div>
+                    <span class="block-title">FOCUS SESSION</span>
+                    <i class="fa-solid fa-chevron-right block-arrow"></i>
+                </div>
+                <div class="focus-timer">
+                    <div class="focus-ring" id="focus-ring">
+                        <span class="focus-time-display" id="focus-display">25:00</span>
+                    </div>
+                    <div class="focus-controls">
+                        <button class="focus-btn" onclick="event.stopPropagation();toggleFocus()">
+                            <i class="fa-solid fa-play" id="focus-icon"></i>
+                            <span id="focus-btn-text">START</span>
+                        </button>
+                        <button class="focus-btn" onclick="event.stopPropagation();resetFocus()">
+                            <i class="fa-solid fa-rotate-left"></i> RESET
+                        </button>
+                    </div>
+                    <div class="focus-total">TODAY: <span id="focus-total-display">0 min</span></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script src="js/dashboard.js" type="module"></script>
+</body>
+</html>

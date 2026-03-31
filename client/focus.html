@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="dark">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>HabitQuest — Focus</title>
+    <script>
+        (function(){try{const p=JSON.parse(localStorage.getItem('hq-prefs')||'{}'),h=document.documentElement;if(p.mode)h.setAttribute('data-mode',p.mode);if(p.theme)h.setAttribute('data-theme',p.theme);const BG={default:'linear-gradient(135deg,#111016,#1a1020)',space:'linear-gradient(135deg,#0a0f1e,#0d1830)',forest:'linear-gradient(135deg,#0a1a10,#0d2818)',dusk:'linear-gradient(135deg,#180820,#100018)',steel:'linear-gradient(135deg,#0e1220,#141a2e)',crimson:'linear-gradient(135deg,#180808,#220d0d)'};const BGL={default:'linear-gradient(135deg,#f5f0eb,#ede4d8)',space:'linear-gradient(135deg,#e8f0f5,#d8e8f0)',forest:'linear-gradient(135deg,#e8f5ee,#d8f0e4)',dusk:'linear-gradient(135deg,#f0e8f5,#e8d8f0)',steel:'linear-gradient(135deg,#eaedf5,#d8dced)',crimson:'linear-gradient(135deg,#f5e8e8,#f0d8d8)'};if(p.bg){const isL=p.mode==='light';const g=(isL?BGL:BG)[p.bg]||(isL?BGL.default:BG.default);h.style.background=g;h.style.backgroundAttachment='fixed';h.style.setProperty('--bg-gradient',g);}if(p.accent){const c=p.accent,r=parseInt(c.slice(1,3),16),g2=parseInt(c.slice(3,5),16),b=parseInt(c.slice(5,7),16);h.style.setProperty('--accent',c);h.style.setProperty('--accent-rgb',`${r},${g2},${b}`);h.style.setProperty('--accent-dim',`rgba(${r},${g2},${b},0.12)`);h.style.setProperty('--accent-border',`rgba(${r},${g2},${b},0.25)`);h.style.setProperty('--accent-glow',`rgba(${r},${g2},${b},0.4)`);}}catch(e){}})();
+    </script>
+    <link rel="stylesheet" href="css/focus.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+25&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+</head>
+<body>
+
+    <!-- AMBIENT PARTICLES -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- HEADER -->
+    <header class="app-header" id="app-header">
+        <div class="back-btn" onclick="goBack()">
+            <i class="fa-solid fa-chevron-left"></i>
+        </div>
+        <div class="app-logo">HabitQuest</div>
+        <button class="history-btn" onclick="openHistory()">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+        </button>
+    </header>
+
+    <!-- MAIN FOCUS AREA -->
+    <div class="focus-wrap" id="focus-wrap">
+
+        <!-- SESSION LABEL -->
+        <div class="session-label" id="session-label">FOCUS SESSION</div>
+
+        <!-- SVG RING TIMER -->
+        <div class="ring-wrap">
+            <svg class="ring-svg" viewBox="0 0 260 260">
+                <circle class="ring-bg"   cx="130" cy="130" r="118"/>
+                <circle class="ring-fill" cx="130" cy="130" r="118" id="ring-fill"/>
+            </svg>
+            <div class="ring-inner">
+                <div class="timer-display" id="timer-display">25:00</div>
+                <div class="timer-status"  id="timer-status">READY</div>
+            </div>
+        </div>
+
+        <!-- CONTROLS -->
+        <div class="controls-row">
+            <button class="ctrl-btn secondary" id="reset-btn" onclick="resetTimer()">
+                <i class="fa-solid fa-rotate-left"></i>
+            </button>
+            <button class="ctrl-btn primary" id="play-btn" onclick="toggleTimer()">
+                <i class="fa-solid fa-play" id="play-icon"></i>
+            </button>
+            <button class="ctrl-btn secondary" onclick="openSettings()">
+                <i class="fa-solid fa-sliders"></i>
+            </button>
+        </div>
+
+        <!-- AMBIENT SOUND BAR -->
+        <div class="sound-bar">
+            <span class="sound-label">AMBIENT</span>
+            <div class="sound-btns">
+                <button class="sound-btn active" data-sound="none"   onclick="setSound('none')">🔇</button>
+                <button class="sound-btn" data-sound="rain"   onclick="setSound('rain')">🌧</button>
+                <button class="sound-btn" data-sound="fire"   onclick="setSound('fire')">🔥</button>
+                <button class="sound-btn" data-sound="cafe"   onclick="setSound('cafe')">☕</button>
+                <button class="sound-btn" data-sound="forest" onclick="setSound('forest')">🌿</button>
+                <button class="sound-btn" data-sound="waves"  onclick="setSound('waves')">🌊</button>
+                <button class="sound-btn" data-sound="space"  onclick="setSound('space')">🪐</button>
+            </div>
+            <div class="vol-row">
+                <i class="fa-solid fa-volume-low" style="font-size:10px;color:var(--text-muted)"></i>
+                <input type="range" class="vol-slider" id="vol-slider" min="0" max="100" value="40" oninput="setVolume(this.value)"/>
+                <i class="fa-solid fa-volume-high" style="font-size:10px;color:var(--text-muted)"></i>
+            </div>
+        </div>
+
+        <!-- XP PREVIEW -->
+        <div class="xp-preview" id="xp-preview">
+            <span>⚡</span>
+            <span id="xp-preview-val">+25 XP on completion</span>
+        </div>
+
+    </div>
+
+    <!-- SETTINGS PANEL -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-box">
+            <div class="modal-title">⏱ SET DURATION</div>
+
+            <div class="preset-row">
+                <div class="preset-btn active" data-min="15"  onclick="pickPreset(15)">15<span>MIN</span></div>
+                <div class="preset-btn" data-min="25"  onclick="pickPreset(25)">25<span>MIN</span></div>
+                <div class="preset-btn" data-min="45"  onclick="pickPreset(45)">45<span>MIN</span></div>
+                <div class="preset-btn" data-min="60"  onclick="pickPreset(60)">60<span>MIN</span></div>
+                <div class="preset-btn" data-min="90"  onclick="pickPreset(90)">90<span>MIN</span></div>
+            </div>
+
+            <label class="modal-label">CUSTOM (MINUTES)</label>
+            <input class="modal-input" id="custom-min" type="number" min="1" max="240" placeholder="e.g. 50"/>
+
+            <!-- ⚠ Under-5-minute warning -->
+            <div id="duration-warning" style="display:none;color:#f43f5e;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:1px;margin:-6px 0 8px 0;text-align:center;">
+                ⚠ Sessions under 5 minutes earn no XP
+            </div>
+
+            <label class="modal-label">SESSION NAME (OPTIONAL)</label>
+            <input class="modal-input" id="session-name-input" placeholder="e.g. Deep Work, Study..." maxlength="30"/>
+
+            <div class="modal-actions">
+                <button class="modal-btn cancel"  onclick="closeSettings()">CANCEL</button>
+                <button class="modal-btn confirm" onclick="applySettings()">START</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HISTORY PANEL -->
+    <div class="modal-overlay" id="history-modal">
+        <div class="modal-box">
+            <div class="modal-title">📋 SESSION HISTORY</div>
+            <div class="history-stats-row" id="history-stats"></div>
+            <div class="history-list" id="history-list"></div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeHistory()">CLOSE</button>
+                <button class="modal-btn danger" onclick="clearHistory()">CLEAR ALL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMPLETION OVERLAY -->
+    <div class="complete-overlay" id="complete-overlay">
+        <div class="complete-box">
+            <div class="complete-emoji">🎉</div>
+            <div class="complete-title">SESSION COMPLETE!</div>
+            <div class="complete-sub" id="complete-sub">You focused for 25 minutes</div>
+            <div class="complete-xp" id="complete-xp">+25 XP</div>
+            <button class="complete-btn" onclick="closeComplete()">AWESOME!</button>
+        </div>
+    </div>
+
+    <!-- XP TOAST -->
+    <div class="xp-toast" id="xp-toast">+0 XP</div>
+
+    <script src="js/focus.js" type="module"></script>
+</body>
+</html>
