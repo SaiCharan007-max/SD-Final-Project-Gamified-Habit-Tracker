@@ -139,6 +139,12 @@ body::after{content:'';position:fixed;inset:0;background:var(--bg-gradient,linea
 .streak-block:hover{transform:none;}
 .streak-total-badge{margin-left:auto;background:var(--accent);color:#0a0a0a;font-weight:700;padding:2px 10px;border-radius:16px;font-size:12px;font-family:'Jersey 25',sans-serif;box-shadow:0 0 10px var(--accent-glow);}
 .week-circles{display:flex;justify-content:space-between;gap:4px;margin-bottom:10px;}
+.puzzle-block{margin-bottom:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(var(--accent-rgb),0.2);border-radius:10px;padding:8px;}
+.puzzle-title{font-size:9px;color:var(--accent);letter-spacing:2px;font-weight:700;margin-bottom:6px;}
+.puzzle-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px;}
+.puzzle-piece{width:100%;aspect-ratio:1/1;border-radius:5px;background:rgba(255,255,255,0.04);border:1px dashed rgba(var(--accent-rgb),0.2);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.45);}
+.puzzle-piece.unlocked{background:var(--accent);border-color:var(--accent);color:#0a0a0a;box-shadow:0 0 6px var(--accent-glow);}
+.puzzle-status{font-size:9px;color:var(--text-secondary);letter-spacing:1px;height:16px;}
 .day-circle{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
 .day-circle-ring{width:30px;height:30px;border-radius:50%;border:2px solid var(--accent-border);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--text-muted);font-weight:700;transition:all 0.3s;background:var(--accent-dim);}
 .day-circle-ring.completed{border-color:var(--accent);background:var(--accent);color:#0a0a0a;box-shadow:0 0 10px var(--accent-glow);}
