@@ -1,7 +1,7 @@
 // ============================================
 //  HABITQUEST DASHBOARD JS (Backend wired)
 // ============================================
-import { leaderboardAPI, requireAuth, getToken, logout as apiLogout } from './api.js';
+import { leaderboardAPI, profileAPI, requireAuth, getToken, logout as apiLogout } from './api.js';
 
 const BG_GRADIENTS={default:'linear-gradient(135deg,#111016,#1a1020)',space:'linear-gradient(135deg,#0a0f1e,#0d1830)',forest:'linear-gradient(135deg,#0a1a10,#0d2818)',dusk:'linear-gradient(135deg,#180820,#100018)',steel:'linear-gradient(135deg,#0e1220,#141a2e)',crimson:'linear-gradient(135deg,#180808,#220d0d)'};
 const BG_GRADIENTS_LIGHT={default:'linear-gradient(135deg,#f5f0eb,#ede4d8)',space:'linear-gradient(135deg,#e8f0f5,#d8e8f0)',forest:'linear-gradient(135deg,#e8f5ee,#d8f0e4)',dusk:'linear-gradient(135deg,#f0e8f5,#e8d8f0)',steel:'linear-gradient(135deg,#eaedf5,#d8dced)',crimson:'linear-gradient(135deg,#f5e8e8,#f0d8d8)'};
@@ -34,7 +34,7 @@ function getMyNameFromToken() {
 // ── LOAD ALL USER DATA ──
 async function loadUserData() {
     // Name + avatar
-    const profile = JSON.parse(localStorage.getItem('hq-profile') || '{}');
+    const profile = profileAPI.get();
     const name    = (profile.username || getMyNameFromToken()).toUpperCase();
     document.getElementById('header-username').textContent = name;
     document.getElementById('welcome-username').textContent = name;

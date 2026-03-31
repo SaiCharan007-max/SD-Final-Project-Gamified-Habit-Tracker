@@ -17,7 +17,8 @@ export function isLoggedIn() {
 
 export function logout() {
     localStorage.removeItem("token");
-    localStorage.removeItem("hq-profile");
+    // Keep local profile data so user settings persist when logging back in.
+    // localStorage.removeItem("hq-profile");
     window.location.href = "index.html";
 }
 

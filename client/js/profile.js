@@ -2,6 +2,8 @@
 //  HABITQUEST — PROFILE JS
 // ============================================
 
+import { profileAPI } from './api.js';
+
 const BADGES_ALL = [
     { emoji:'🔥', name:'ON FIRE',       desc:'Complete 7 habits in a row',   earned:true  },
     { emoji:'⚡', name:'LIGHTNING',     desc:'Finish a focus session',        earned:true  },
@@ -57,7 +59,7 @@ async function loadProfile() {
         userId   = payload.userId;
     } catch(e) {}
 
-    const profile = JSON.parse(localStorage.getItem('hq-profile') || '{}');
+    const profile = profileAPI.get();
     const lsStats = JSON.parse(localStorage.getItem('stats') || '{}');
 
     // Username + bio + avatar
@@ -163,13 +165,39 @@ function saveProfile() {
     const username = document.getElementById('username-input').value.trim().toUpperCase() || 'PLAYER';
     const bio      = document.getElementById('bio-input').value.trim();
 
-    const profile = JSON.parse(localStorage.getItem('hq-profile') || '{}');
-    profile.username = username;
-    profile.bio      = bio;
-    localStorage.setItem('hq-profile', JSON.stringify(profile));
+    const avatarImgEl = document.getElementById('avatar-img');
+    const avatarIconEl = document.getElementById('avatar-icon');
+    const avatarSrc = avatarImgEl && avatarImgEl.style.display !== 'none' ? avatarImgEl.src : null;
+
+    const payload = {
+        username,
+        bio,
+        ...(avatarSrc ? { avatar: avatarSrc } : {}),
+    };
+
+    let saved;
+    try {
+        saved = profileAPI.save(payload);
+    } catch (err) {
+        console.error('Failed to save profile', err);
+        alert('Unable to save profile. Please retry or clear local storage.');
+        return;
+    }
+
+    const profile = saved;
 
     document.getElementById('username-display').textContent = username;
     document.getElementById('bio-display').textContent = bio || 'No bio yet. Click EDIT to add one.';
+
+    if (avatarSrc) {
+        avatarImgEl.src = avatarSrc;
+        avatarImgEl.style.display = 'block';
+        avatarIconEl.style.display = 'none';
+    }
+
+    // Save updated values to DOM and ensure global profile is updated
+    if (profile.username) document.getElementById('username-display').textContent = profile.username;
+    if (profile.bio !== undefined) document.getElementById('bio-display').textContent = profile.bio || 'No bio yet. Click EDIT to add one.';
 
     const btn = document.getElementById('save-profile-btn');
     btn.textContent = '✓ SAVED!';
@@ -206,9 +234,7 @@ function handleAvatarUpload(event) {
             document.getElementById('avatar-icon').style.display = 'none';
 
             try {
-                const profile = JSON.parse(localStorage.getItem('hq-profile') || '{}');
-                profile.avatar = compressed;
-                localStorage.setItem('hq-profile', JSON.stringify(profile));
+                profileAPI.save({ avatar: compressed });
             } catch(err) {
                 alert('Image too large. Please use a smaller image.');
             }
