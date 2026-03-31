@@ -3,16 +3,11 @@ import * as timetableService from "../services/timetable.service.js";
 export const createSlot = async (req, res, next) => {
     try {
         const userId = req.userId;
-        const { day_of_week, day, title, start_time, end_time } = req.body;
-
-        const slotDay = (typeof day_of_week !== 'undefined') ? day_of_week : day;
-        if (slotDay === undefined || slotDay === null) {
-            throw new Error('day_of_week or day is required');
-        }
+        const { day, title, start_time, end_time } = req.body;
 
         const slot = await timetableService.addSlot({
             userId,
-            day: slotDay,
+            day,
             title,
             start_time,
             end_time
