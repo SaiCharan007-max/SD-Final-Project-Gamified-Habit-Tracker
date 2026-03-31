@@ -344,10 +344,10 @@ async function saveSlot() {
 
         try {
             const res    = await timetableAPI.addSlot({
-                day:        editingDay,
-                title:      subject,
-                start_time: start,
-                end_time:   end,
+                day_of_week: editingDay,
+                title:       subject,
+                start_time:  start,
+                end_time:    end,
             });
             const newId = res.data?.id;
             if (newId) saveSlotExtras(newId, { color: selectedColor, done: modalDone, important: modalImportant, reminder: modalReminder });
@@ -362,10 +362,10 @@ async function saveSlot() {
         const day = pendingDay !== null ? pendingDay : 0;
         try {
             const res   = await timetableAPI.addSlot({
-                day,
-                title:      subject,
-                start_time: start,
-                end_time:   end,
+                day_of_week: day,
+                title:       subject,
+                start_time:  start,
+                end_time:    end,
             });
             const newId = res.data?.id;
             if (newId) saveSlotExtras(newId, { color: selectedColor, done: modalDone, important: modalImportant, reminder: modalReminder });
