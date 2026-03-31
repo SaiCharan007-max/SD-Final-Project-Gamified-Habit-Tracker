@@ -1,9 +1,9 @@
 :root {
-    --accent:#cb7341;
-    --accent-rgb:203,115,65;
-    --accent-dim:rgba(203,115,65,0.12);
-    --accent-border:rgba(203,115,65,0.22);
-    --accent-glow:rgba(203,115,65,0.38);
+    --accent:#d4af37;
+    --accent-rgb:212, 175, 55;
+    --accent-dim:rgba(212, 175, 55,0.12);
+    --accent-border:rgba(212, 175, 55,0.22);
+    --accent-glow:rgba(212, 175, 55,0.38);
     --bg-card:rgba(24,18,32,0.78);
     --bg-header:rgba(18,14,24,0.9);
     --text-primary:#f0e8ff;

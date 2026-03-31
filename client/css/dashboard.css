@@ -1,8 +1,8 @@
 :root {
-    --accent:#cb7341;
-    --accent-rgb:203,115,65;
-    --accent-dim:rgba(203,115,65,0.08);
-    --accent-border:rgba(203,115,65,0.18);
+    --accent:#d4af37;
+    --accent-rgb:212, 175, 55;
+    --accent-dim:rgba(212, 175, 55,0.08);
+    --accent-border:rgba(212, 175, 55,0.18);
     --accent-glow:transparent;
     --bg-card:rgba(28,22,35,0.74);
     --bg-header:rgba(18,14,24,0.85);
@@ -84,11 +84,11 @@
 }
 
 [data-theme="orange"] {
-    --accent:#cb7341;
-    --accent-rgb:203,115,65;
-    --accent-dim:rgba(203,115,65,0.14);
-    --accent-border:rgba(203,115,65,0.28);
-    --accent-glow:rgba(203,115,65,0.45);
+    --accent:#d4af37;
+    --accent-rgb:212, 175, 55;
+    --accent-dim:rgba(212, 175, 55,0.14);
+    --accent-border:rgba(212, 175, 55,0.28);
+    --accent-glow:rgba(212, 175, 55,0.45);
     --bg-card:rgba(28,22,35,0.82);
     --bg-header:rgba(18,14,24,0.92);
     --bg-sidebar:rgba(16,12,22,0.97);

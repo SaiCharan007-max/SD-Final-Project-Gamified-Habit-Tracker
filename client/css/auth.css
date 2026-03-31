@@ -56,7 +56,7 @@ html, body {
     margin-bottom: 30px;
     font-size: 30px;
     font-family: 'Orbitron', sans-serif;
-    color: #cb7341;
+    color: #d4af37;
     letter-spacing: 1px;
 }
 
@@ -73,7 +73,7 @@ html, body {
     font-size: 15px;
     margin-bottom: 6px;
     margin-top: 6px;
-    color: #cb7341;
+    color: #d4af37;
 }
 
 .input-group input {
@@ -89,12 +89,12 @@ html, body {
 }
 
 .input-group input:hover {
-    border-color: rgba(203, 115, 65, 0.5);
+    border-color: rgba(212, 175, 55, 0.5);
 }
 
 
 .input-group input:focus {
-    border-color: #cb7341;
+    border-color: #d4af37;
 }
 
 
@@ -104,7 +104,7 @@ button {
     width: 100%;
     border-radius: 16px;
 
-    background-color: #cb7341;
+    background-color: #d4af37;
 
     border: none;
     color: #fff;
@@ -117,7 +117,7 @@ button {
 
 button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(203, 115, 65, 0.4);
+    box-shadow: 0 12px 25px rgba(212, 175, 55, 0.4);
     filter: brightness(1.05);
 }
 
@@ -135,7 +135,7 @@ button:hover {
 }
 
 .signup-text a{
-    color: #cb7341;
+    color: #d4af37;
     text-decoration: none;
     font-weight: 500;
 }
@@ -161,8 +161,8 @@ button:hover {
 .app-logo {
     font-size: 40px;
     font-weight: normal;
-    color: #cb7341;
-    text-shadow: 0 0 6px rgba(203, 115, 65, 0.4);
+    color: #d4af37;
+    text-shadow: 0 0 6px rgba(212, 175, 55, 0.4);
     font-family: 'Jersey 25', sans-serif;
     letter-spacing: 1.5px;
 }
@@ -184,7 +184,7 @@ button:hover {
 
 .login-info h1 {
     font-size: 40px;
-    color: #cb7341;
+    color: #d4af37;
     margin-bottom: 20px;
     font-family: 'Orbitron', sans-serif;
     max-width: 600px;
@@ -246,7 +246,7 @@ button:active {
     transform: translateY(-50%);
     cursor: pointer;
     font-size: 18px;
-    color: #cb7341;
+    color: #d4af37;
     user-select: none;
 }
 
