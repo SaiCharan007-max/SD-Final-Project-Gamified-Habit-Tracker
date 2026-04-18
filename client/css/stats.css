@@ -163,3 +163,15 @@ body::after{content:'';position:fixed;inset:0;background:var(--bg-gradient,linea
     .cal-grid{max-height:120px;}
     .chart-wrap{height:130px;}
 }
+
+@media(max-width:520px){
+    .app-header{padding:0 12px;}
+    .page-title{display:none;}
+    .header-right{width:0;}
+    .app-logo{font-size:18px;letter-spacing:2px;}
+    .card{padding:12px;}
+    .xp-inner{flex-direction:column;align-items:flex-start;}
+    .ov-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .badges-inner{grid-template-columns:repeat(3,minmax(0,1fr));}
+    .cal-legend{flex-wrap:wrap;gap:8px;justify-content:flex-start;}
+}

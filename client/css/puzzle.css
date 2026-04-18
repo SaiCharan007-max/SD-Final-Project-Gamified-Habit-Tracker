@@ -729,3 +729,61 @@ body::before {
         text-align:center;
     }
 }
+
+@media (max-width:560px) {
+    .app-header {
+        padding: 0 12px;
+    }
+
+    .header-left {
+        gap: 10px;
+        min-width: 0;
+    }
+
+    .app-logo {
+        font-size: 18px;
+        letter-spacing: 2px;
+    }
+
+    .ghost-btn {
+        padding: 8px 10px;
+        font-size: 0;
+        gap: 0;
+    }
+
+    .ghost-btn i {
+        font-size: 12px;
+    }
+
+    .summary-card,
+    .panel,
+    .mission-card {
+        border-radius: 16px;
+    }
+
+    .summary-value {
+        font-size: 26px;
+    }
+
+    .panel-title {
+        font-size: 20px;
+    }
+
+    .board-overlay {
+        padding: 14px;
+    }
+
+    .board-overlay-title {
+        font-size: 22px;
+    }
+
+    .board-overlay-subtitle {
+        font-size: 9px;
+        line-height: 1.6;
+    }
+
+    .tile-grid {
+        gap: 6px;
+        padding: 10px;
+    }
+}

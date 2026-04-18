@@ -10,9 +10,13 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
   background: 
     linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
     url("../assets/images/BG.jpg") ;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 
@@ -279,4 +283,14 @@ button:disabled {
     transform: none;
     background-color: #a3842d !important;
     color: #091018 !important;
+}
+
+@media (max-width: 640px) {
+    .app-header {
+        padding: 0 14px;
+    }
+
+    .app-logo {
+        font-size: 32px;
+    }
 }

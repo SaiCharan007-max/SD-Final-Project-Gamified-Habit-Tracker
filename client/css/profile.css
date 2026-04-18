@@ -105,3 +105,14 @@ body::after{content:'';position:fixed;inset:0;background:var(--bg-gradient,linea
     .badges-card{min-height:200px;}
     .badges-inner{max-height:160px;}
 }
+
+@media(max-width:520px){
+    .app-header{padding:0 12px;}
+    .page-title{display:none;}
+    .app-logo{font-size:18px;letter-spacing:2px;}
+    .edit-toggle-btn{padding:6px 10px;}
+    .edit-toggle-btn span{display:none;}
+    .card{padding:12px;}
+    .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .badges-inner{grid-template-columns:repeat(3,minmax(0,1fr));}
+}

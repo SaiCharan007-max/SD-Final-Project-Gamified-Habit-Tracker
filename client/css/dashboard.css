@@ -1217,3 +1217,72 @@ body::after {
         display:none;
     }
 }
+
+@media (max-width:560px) {
+    .app-header {
+        padding: 0 12px;
+        gap: 10px;
+    }
+
+    .header-left {
+        gap: 10px;
+        min-width: 0;
+    }
+
+    .app-logo {
+        font-size: 18px;
+        letter-spacing: 2px;
+    }
+
+    .header-profile {
+        padding: 4px 8px;
+        min-width: 0;
+    }
+
+    .profile-info {
+        display: none;
+    }
+
+    .page-body {
+        padding-inline: 8px;
+    }
+
+    .dash-block {
+        padding: 12px;
+        border-radius: 14px;
+    }
+
+    .xp-bar-header,
+    .block-header {
+        flex-wrap: wrap;
+        row-gap: 6px;
+    }
+
+    .lvl-tag,
+    .streak-total-badge {
+        margin-left: 0;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .week-circles {
+        gap: 2px;
+    }
+
+    .day-circle-ring {
+        width: 26px;
+        height: 26px;
+    }
+
+    .focus-controls {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .focus-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
