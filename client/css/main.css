@@ -692,11 +692,68 @@ select:focus,
 
 @media (max-width: 900px) {
     .login-layout {
+        flex-direction: column !important;
+        align-items: stretch !important;
         gap: 22px !important;
         padding-inline: 18px !important;
     }
 
+    .login-container,
     .login-info {
-        padding: 24px 10px !important;
+        flex: 1 1 auto !important;
+        width: 100% !important;
     }
+
+    .login-info {
+        padding: 24px 10px 4px !important;
+        text-align: center !important;
+        align-items: center !important;
+    }
+
+    .login-info h1,
+    .login-info p {
+        max-width: 100% !important;
+    }
+
+    .login-container {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .login-page {
+        align-items: flex-start !important;
+        padding-top: 76px !important;
+        padding-bottom: 20px !important;
+    }
+
+    .login-layout {
+        padding-inline: 12px !important;
+    }
+
+    .login-info {
+        padding: 10px 0 0 !important;
+    }
+
+    .login-info h1 {
+        font-size: clamp(2.2rem, 10vw, 3rem) !important;
+        line-height: 1.02 !important;
+    }
+
+    .login-info p {
+        font-size: 0.95rem !important;
+        line-height: 1.7 !important;
+    }
+
+    .login-box {
+        width: 100% !important;
+        padding: 28px 20px !important;
+        border-radius: 20px !important;
+    }
+
+    .login-box h2 {
+        font-size: 2rem !important;
+        margin-bottom: 18px !important;
+    }
+
 }

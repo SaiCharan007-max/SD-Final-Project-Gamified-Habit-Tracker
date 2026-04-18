@@ -391,25 +391,26 @@ body::after {
 .modal-btn.cancel { background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid rgba(255,255,255,0.1); }
 .modal-btn.cancel:hover { color:var(--text-secondary); }
 .modal-btn.delete-btn {
-        flex: 0 0 auto;
-        min-width: 110px;
-        padding: 11px 12px;
-        background: rgba(244, 63, 94, 0.15);
-        border: 2px solid rgba(244, 63, 94, 0.6);
-        color: #f43f5e;
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 1px;
-        border-radius: 10px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        text-transform: uppercase;
-    }
+    flex:0 0 auto;
+    min-width:110px;
+    padding:11px 12px;
+    background:rgba(244, 63, 94, 0.15);
+    border:2px solid rgba(244, 63, 94, 0.6);
+    color:#f43f5e;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:1px;
+    border-radius:10px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    text-transform:uppercase;
+}
 
-    .modal-btn.delete-btn i {
-        font-size: 13px;
+.modal-btn.delete-btn i {
+    font-size:13px;
+}
 
 .modal-btn.delete-btn:hover {
     background: #f43f5e;
@@ -425,11 +426,82 @@ body::after {
 }
 
 /* ── RESPONSIVE ── */
+@media (max-width:900px) {
+    .app-header {
+        height:auto;
+        min-height:60px;
+        padding:10px 12px;
+        align-items:flex-start;
+        gap:10px;
+        flex-wrap:wrap;
+    }
+
+    .page-title {
+        display:none;
+    }
+
+    .header-right {
+        width:100%;
+        justify-content:space-between;
+        gap:8px;
+        flex-wrap:wrap;
+    }
+
+    .week-nav {
+        flex:1 1 100%;
+        justify-content:space-between;
+    }
+
+    .week-nav span {
+        min-width:0;
+        flex:1;
+    }
+
+    .today-btn {
+        margin-left:auto;
+    }
+
+    .reminder-toast {
+        top:112px;
+        right:12px;
+        left:12px;
+        min-width:0;
+        max-width:none;
+    }
+
+    .schedule-outer {
+        top:114px;
+        overflow:auto;
+    }
+
+    .schedule-container,
+    .grid-header,
+    .grid-inner {
+        min-width:720px;
+    }
+
+    .modal-box {
+        width:min(94vw, 420px);
+        padding:22px 16px;
+    }
+
+    .modal-row {
+        grid-template-columns:1fr;
+        gap:0;
+    }
+}
+
 @media (max-width:700px) {
     :root { --hour-height:50px; }
     .event-time { display:none; }
     .event-name { font-size:9px; }
-    .page-title { display:none; }
+    .app-logo { font-size:18px; letter-spacing:2px; }
+    .header-left { gap:10px; }
+    .today-btn { width:100%; }
+    .modal-toggles { flex-direction:column; }
+    .modal-toggle-item { min-width:0; }
+    .modal-actions { flex-wrap:wrap; }
+    .modal-btn.delete-btn { width:100%; min-width:0; order:3; }
 }
 
 [data-mode="light"] .modal-box {

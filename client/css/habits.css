@@ -185,3 +185,39 @@ input[type=number].modal-input::-webkit-inner-spin-button{opacity:0.5;}
 .cat-fitness {--cat-color:#f59e0b;}
 .cat-social  {--cat-color:#f43f5e;}
 .cat-other   {--cat-color:var(--accent);}
+
+@media (max-width:760px){
+    .page-title{display:none;}
+    .app-header{padding:0 12px;}
+    .summary-row{
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:8px;
+        padding:10px 12px;
+        margin-top:calc(var(--header-h) + 46px);
+    }
+    .filter-bar{padding:10px 12px;}
+    .habits-list{padding:10px 12px 92px;}
+    .modal-box{padding:22px 16px 28px;}
+    .goal-row{flex-wrap:wrap;}
+    .goal-opt{min-width:calc(50% - 4px);}
+}
+
+@media (max-width:560px){
+    .header-left{gap:10px;}
+    .app-logo{font-size:18px;letter-spacing:2px;}
+    .add-btn{padding:7px 10px;font-size:0;}
+    .add-btn i{font-size:12px;margin:0;}
+    .habit-card{padding:12px 12px 14px;}
+    .habit-top{flex-wrap:wrap;align-items:flex-start;}
+    .habit-actions{width:100%;margin-left:0;justify-content:flex-end;}
+    .habit-name{white-space:normal;}
+    .modal-actions{flex-direction:column;}
+    .modal-btn{width:100%;}
+    .time-drum-wrap{gap:6px;padding:12px 8px;}
+    .drum-display{width:56px;height:52px;font-size:24px;}
+    .ampm-col .drum-display{width:46px;font-size:14px;}
+    .drum-btn{width:34px;}
+    .ampm-col .drum-btn{width:28px;}
+    .xp-toast{width:min(calc(100% - 24px),320px);padding-inline:16px;text-align:center;}
+}
