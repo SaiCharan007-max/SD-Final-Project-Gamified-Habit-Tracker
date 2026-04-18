@@ -1,7 +1,14 @@
-const API_ORIGIN =
-    window.location.protocol.startsWith("http") && /:3137$/.test(window.location.origin)
-        ? window.location.origin
-        : "http://localhost:3137";
+const LOCAL_API_ORIGIN = "http://localhost:3137";
+const PRODUCTION_API_ORIGIN = "https://gamified-habit-tracker-rjcm.onrender.com";
+const isLocalFile = window.location.protocol === "file:";
+const isLocalhost =
+    window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const isRenderHost = /(?:^|\.)onrender\.com$/i.test(window.location.hostname);
+const API_ORIGIN = isLocalFile
+    ? LOCAL_API_ORIGIN
+    : isLocalhost || isRenderHost
+      ? `${window.location.protocol}//${window.location.host}`
+      : PRODUCTION_API_ORIGIN;
 
 function persistUserProfile(user) {
     if (!user) return;
