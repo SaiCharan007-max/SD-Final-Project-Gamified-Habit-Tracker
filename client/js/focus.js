@@ -1,22 +1,33 @@
 // ============================================
 //  HABITQUEST — FOCUS JS (Backend wired)
 // ============================================
-import { focusAPI, requireAuth } from './api.js';
+import { requireAuth } from "./api.js";
+import {
+    DEFAULT_FOCUS_LABEL,
+    calcFocusXp,
+    completeFocusSessionState,
+    ensureFocusState,
+    formatFocusTime,
+    getFocusState,
+    getStoredFocusMinutes,
+    pauseFocusSessionState,
+    resetFocusSessionState,
+    setFocusConfig,
+    startFocusSessionState,
+} from "./focus-session.js";
 
 // ── STATE ──
-let totalSeconds   = 25 * 60;
-let remaining      = totalSeconds;
-let timerInterval  = null;
-let isRunning      = false;
-let sessionName    = 'FOCUS SESSION';
-let selectedPreset = 15;
-let currentSound   = 'none';
-let audioCtx       = null;
-let soundNodes     = {};
-let volume         = 0.4;
-
-// Backend session tracking
-let activeSessionId = null;   // set when backend session starts
+let totalSeconds = getStoredFocusMinutes() * 60;
+let remaining = totalSeconds;
+let timerInterval = null;
+let isRunning = false;
+let sessionName = DEFAULT_FOCUS_LABEL;
+let selectedPreset = getStoredFocusMinutes();
+let currentSound = "none";
+let audioCtx = null;
+let soundNodes = {};
+let volume = 0.4;
+let completionInFlight = false;
 
 const CIRCUMFERENCE = 2 * Math.PI * 118;
 
@@ -43,141 +54,138 @@ function toggleTimer() {
 async function startTimer() {
     if (remaining <= 0) return;
 
-    // Start backend session if not already started
-    if (!activeSessionId) {
-        try {
-            const res = await focusAPI.start();
-            activeSessionId = res.data?.id || null;
-        } catch(e) {
-            // If server is unreachable, still run locally
-            console.warn('Could not start backend focus session:', e.message);
-        }
+    try {
+        const state = await startFocusSessionState();
+        applyTimerState(state);
+        startTimerLoop();
+    } catch (error) {
+        console.warn("Could not start backend focus session:", error.message);
     }
-
-    isRunning = true;
-    document.getElementById('play-icon').className = 'fa-solid fa-pause';
-    document.getElementById('timer-status').textContent = 'FOCUSING';
-    document.getElementById('ring-fill').classList.add('running');
-    timerInterval = setInterval(tick, 1000);
-    startParticles();
 }
 
 function pauseTimer() {
-    isRunning = false;
-    clearInterval(timerInterval);
-    document.getElementById('play-icon').className = 'fa-solid fa-play';
-    document.getElementById('timer-status').textContent = 'PAUSED';
-    document.getElementById('ring-fill').classList.remove('running');
-    stopParticles();
+    const state = pauseFocusSessionState();
+    applyTimerState(state);
+    stopTimerLoop();
 }
 
 function resetTimer() {
-    pauseTimer();
+    const state = resetFocusSessionState();
+    applyTimerState(state);
+    stopTimerLoop();
     // If there was a backend session, abandon it silently (no stop call — session won't be < 5 mins anyway)
-    activeSessionId = null;
-    remaining = totalSeconds;
-    document.getElementById('timer-status').textContent = 'READY';
-    updateDisplay();
 }
 
-function tick() {
-    if (remaining <= 0) {
-        completeSession();
+function stopTimerLoop() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+
+function startTimerLoop() {
+    stopTimerLoop();
+    timerInterval = setInterval(() => {
+        refreshTimerState().catch((error) => {
+            console.warn("Could not refresh focus timer:", error.message);
+        });
+    }, 1000);
+}
+
+function applyTimerState(state) {
+    totalSeconds = state.durationSeconds;
+    remaining = state.remainingSeconds;
+    isRunning = state.isRunning;
+    sessionName = state.sessionName;
+    selectedPreset = Math.floor(state.durationSeconds / 60);
+
+    document.getElementById("session-label").textContent = sessionName.toUpperCase();
+    document.getElementById("timer-display").textContent = formatFocusTime(remaining);
+
+    const offset = totalSeconds > 0
+        ? CIRCUMFERENCE * (remaining / totalSeconds)
+        : CIRCUMFERENCE;
+
+    document.getElementById("ring-fill").style.strokeDashoffset = offset;
+    document.getElementById("play-icon").className = isRunning
+        ? "fa-solid fa-pause"
+        : "fa-solid fa-play";
+
+    const status = document.getElementById("timer-status");
+    if (isRunning) status.textContent = "FOCUSING";
+    else if (remaining <= 0) status.textContent = "COMPLETE";
+    else if (remaining < totalSeconds) status.textContent = "PAUSED";
+    else status.textContent = "READY";
+
+    document.getElementById("ring-fill").classList.toggle("running", isRunning);
+
+    if (isRunning) startParticles();
+    else stopParticles();
+
+    updateXpPreview();
+}
+
+async function refreshTimerState() {
+    const state = getFocusState();
+
+    if (!completionInFlight && !state.completionRecorded && state.remainingSeconds <= 0) {
+        await completeSession();
         return;
     }
-    remaining--;
-    updateDisplay();
-}
 
-function updateDisplay() {
-    const m = Math.floor(remaining / 60);
-    const s = remaining % 60;
-    document.getElementById('timer-display').textContent =
-        `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    const offset = CIRCUMFERENCE * (remaining / totalSeconds);
-    document.getElementById('ring-fill').style.strokeDashoffset = offset;
+    applyTimerState(state);
+
+    if (state.isRunning) {
+        if (!timerInterval) startTimerLoop();
+    } else {
+        stopTimerLoop();
+    }
 }
 
 // ── COMPLETE ──
 async function completeSession() {
-    pauseTimer();
-    const mins = Math.floor(totalSeconds / 60);
-    const name = sessionName || 'FOCUS SESSION';
-    let xp     = calcXp(mins);
-    let totalPoints = null;
-    let level = null;
+    if (completionInFlight) return;
 
-    // Stop backend session and get real XP back
-    if (activeSessionId) {
-        try {
-            const res  = await focusAPI.stop(activeSessionId);
-            const data = res.data || {};
-            if (data.xp_gained)     xp          = data.xp_gained;
-            if (data.total_points)  totalPoints  = data.total_points;
-            if (data.level)         level        = data.level;
-            if (data.new_badges && data.new_badges.length > 0) {
-                data.new_badges.forEach(b => {
-                    setTimeout(() => showBadgeToast(b.name), 2500);
-                });
-            }
-        } catch(e) {
-            console.warn('Could not stop backend session:', e.message);
+    completionInFlight = true;
+    stopTimerLoop();
+
+    try {
+        const result = await completeFocusSessionState();
+        applyTimerState(getFocusState());
+
+        if (result.newBadges && result.newBadges.length > 0) {
+            result.newBadges.forEach((badge) => {
+                setTimeout(() => showBadgeToast(badge.name), 2500);
+            });
         }
-        activeSessionId = null;
+
+        document.getElementById("complete-sub").textContent =
+            `You focused for ${result.mins} minute${result.mins !== 1 ? "s" : ""}`;
+        document.getElementById("complete-xp").textContent = `+${result.xp} XP`;
+        document.getElementById("complete-overlay").classList.add("active");
+    } finally {
+        completionInFlight = false;
     }
-
-    // Save to localStorage for stats charts
-    const tk = todayKey();
-    const fh = JSON.parse(localStorage.getItem('hq-focus-history') || '{}');
-    fh[tk] = (fh[tk] || 0) + mins;
-    localStorage.setItem('hq-focus-history', JSON.stringify(fh));
-
-    const history = JSON.parse(localStorage.getItem('hq-focus-sessions') || '[]');
-    history.unshift({
-        name, mins, xp,
-        date: new Date().toLocaleDateString('en-IN', { day:'numeric', month:'short' }),
-        ts: Date.now(),
-    });
-    if (history.length > 50) history.pop();
-    localStorage.setItem('hq-focus-sessions', JSON.stringify(history));
-
-    // Show completion screen
-    document.getElementById('complete-sub').textContent = `You focused for ${mins} minute${mins!==1?'s':''}`;
-    document.getElementById('complete-xp').textContent  = `+${xp} XP`;
-    document.getElementById('complete-overlay').classList.add('active');
 }
 
 function closeComplete() {
-    document.getElementById('complete-overlay').classList.remove('active');
+    document.getElementById("complete-overlay").classList.remove("active");
     resetTimer();
 }
 
-function calcXp(mins) {
-    if (mins <= 15) return 15;
-    if (mins <= 30) return 30;
-    if (mins <= 60) return 60;
-    if (mins <= 90) return 100;
-    return 150;
-}
-
-function todayKey() {
-    const d = new Date();
-    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-}
-
 function updateXpPreview() {
-    const mins    = Math.floor(totalSeconds / 60);
-    const preview = document.getElementById('xp-preview-val');
-    const wrap    = document.getElementById('xp-preview');
+    const mins = Math.floor(totalSeconds / 60);
+    const preview = document.getElementById("xp-preview-val");
+    const wrap = document.getElementById("xp-preview");
 
     if (mins < 5) {
         preview.textContent = '⚠ Under 5 min — no XP will be awarded';
-        wrap.style.color    = '#f43f5e';
-        wrap.style.opacity  = '1';
+        wrap.style.color = "#f43f5e";
+        wrap.style.opacity = "1";
     } else {
-        preview.textContent = `+${calcXp(mins)} XP on completion`;
-        wrap.style.color    = '';
-        wrap.style.opacity  = '';
+        preview.textContent = `+${calcFocusXp(mins)} XP on completion`;
+        wrap.style.color = "";
+        wrap.style.opacity = "";
     }
 }
 
@@ -208,14 +216,18 @@ function showBadgeToast(name) {
 // ── SETTINGS ──
 function openSettings() {
     if (isRunning) pauseTimer();
-    document.getElementById('custom-min').value = '';
-    document.getElementById('session-name-input').value = sessionName !== 'FOCUS SESSION' ? sessionName : '';
+
+    const state = getFocusState();
+    selectedPreset = Math.floor(state.durationSeconds / 60);
+    document.getElementById("custom-min").value = "";
+    document.getElementById("session-name-input").value =
+        state.sessionName !== DEFAULT_FOCUS_LABEL ? state.sessionName : "";
     pickPreset(selectedPreset, false);
     updateSettingsWarning();
-    document.getElementById('settings-modal').classList.add('active');
+    document.getElementById("settings-modal").classList.add("active");
 }
 function closeSettings() {
-    document.getElementById('settings-modal').classList.remove('active');
+    document.getElementById("settings-modal").classList.remove("active");
 }
 function pickPreset(min, apply = true) {
     selectedPreset = min;
@@ -225,17 +237,11 @@ function pickPreset(min, apply = true) {
     updateSettingsWarning();
 }
 function applySettings() {
-    const customVal = parseInt(document.getElementById('custom-min').value);
-    const mins      = customVal > 0 ? Math.min(240, customVal) : selectedPreset;
-    const name      = document.getElementById('session-name-input').value.trim();
-    totalSeconds    = mins * 60;
-    remaining       = totalSeconds;
-    sessionName     = name || 'FOCUS SESSION';
-    // Reset backend session on settings change
-    activeSessionId = null;
-    document.getElementById('session-label').textContent = sessionName.toUpperCase();
-    updateDisplay();
-    updateXpPreview();
+    const customVal = parseInt(document.getElementById("custom-min").value, 10);
+    const mins = customVal > 0 ? Math.min(240, customVal) : selectedPreset;
+    const name = document.getElementById("session-name-input").value.trim();
+    const state = setFocusConfig({ minutes: mins, sessionName: name });
+    applyTimerState(state);
     closeSettings();
 }
 
@@ -470,7 +476,8 @@ function animateParticles() {
 function goBack() {
     stopAllSounds();
     stopParticles();
-    window.location.href = 'dashboard.html';
+    stopTimerLoop();
+    window.location.href = "dashboard.html";
 }
 
 // ── KEYBOARD ──
@@ -492,17 +499,28 @@ document.addEventListener('DOMContentLoaded', () => {
     loadThemePrefs();
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
-    // Restore last used duration if saved, otherwise default to 15
-    const savedMins = parseInt(localStorage.getItem('hq-focus-last-mins') || '15', 10);
-    selectedPreset = savedMins;
-    totalSeconds   = savedMins * 60;
-    remaining      = totalSeconds;
-    localStorage.setItem('hq-focus-last-mins', String(savedMins));
-    updateDisplay();
-    updateXpPreview();
-    // Live warning when typing custom minutes in settings modal
+
+    const state = ensureFocusState();
+    applyTimerState(state);
+
+    if (state.isRunning) {
+        startTimerLoop();
+    } else if (!state.completionRecorded && state.remainingSeconds <= 0) {
+        completeSession().catch((error) => {
+            console.warn("Could not finish focus session:", error.message);
+        });
+    }
+
     const customInput = document.getElementById('custom-min');
     if (customInput) customInput.addEventListener('input', updateSettingsWarning);
+
+    window.addEventListener("storage", (event) => {
+        if (event.key === "hq-focus-state" || event.key === "hq-focus-last-mins") {
+            refreshTimerState().catch((error) => {
+                console.warn("Could not sync focus timer:", error.message);
+            });
+        }
+    });
 });
 
 // ── EXPOSE TO HTML ──

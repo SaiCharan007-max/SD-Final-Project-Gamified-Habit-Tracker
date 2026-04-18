@@ -1,4 +1,5 @@
 import {
+    gamificationAPI,
     leaderboardAPI,
     profileAPI,
     requireAuth,
@@ -9,6 +10,16 @@ import {
     puzzleAPI,
     getApiOrigin,
 } from "./api.js";
+import {
+    completeFocusSessionState,
+    ensureFocusState,
+    formatFocusTime,
+    getFocusState,
+    getTodayFocusMinutes,
+    pauseFocusSessionState,
+    resetFocusSessionState,
+    startFocusSessionState,
+} from "./focus-session.js";
 
 const BG_GRADIENTS = {
     default: "linear-gradient(135deg,#111016,#1a1020)",
@@ -35,8 +46,20 @@ let dashboardState = {
     habits: [],
     timetable: [],
     puzzle: null,
+    badges: [],
     xp: 0,
     level: 1,
+};
+
+const BADGE_ICON_MAP = {
+    "First Orbit": "fa-star",
+    Centurion: "fa-trophy",
+    "Task Runner": "fa-bolt",
+    "Task Master": "fa-list-check",
+    "Habit Starter": "fa-seedling",
+    "Streak Keeper": "fa-fire",
+    "Deep Diver": "fa-brain",
+    "Time Bender": "fa-clock",
 };
 
 function savePrefs() {
@@ -241,6 +264,75 @@ function getTilePreviewPosition(index, cols, rows) {
     return { x, y };
 }
 
+function getBadgeIconClass(badge) {
+    if (!badge) return "fa-medal";
+
+    if (BADGE_ICON_MAP[badge.name]) {
+        return BADGE_ICON_MAP[badge.name];
+    }
+
+    switch (badge.condition_type) {
+        case "total_points":
+            return "fa-star";
+        case "tasks_completed":
+            return "fa-list-check";
+        case "habits_completed":
+            return "fa-seedling";
+        case "best_habit_streak":
+            return "fa-fire";
+        case "focus_sessions_completed":
+            return "fa-brain";
+        case "long_focus_minutes":
+            return "fa-clock";
+        default:
+            return "fa-medal";
+    }
+}
+
+function cacheEarnedBadges(badges) {
+    const earnedBadges = Array.isArray(badges) ? badges.filter((badge) => badge.earned) : [];
+    localStorage.setItem("hq-earned-badges", JSON.stringify(earnedBadges));
+    return earnedBadges;
+}
+
+function renderAchievementsPreview(badges, fallbackEarnedCount = 0) {
+    const grid = document.getElementById("achievement-badge-grid");
+    if (!grid) return;
+
+    if (Array.isArray(badges) && badges.length > 0) {
+        grid.innerHTML = badges
+            .slice(0, 6)
+            .map(
+                (badge) => `
+                    <div class="badge-item ${badge.earned ? "" : "locked"}" title="${badge.name}">
+                        <i class="fa-solid ${getBadgeIconClass(badge)}"></i>
+                    </div>
+                `
+            )
+            .join("");
+        return;
+    }
+
+    const fallbackIcons = [
+        "fa-fire",
+        "fa-bolt",
+        "fa-trophy",
+        "fa-gem",
+        "fa-star",
+        "fa-bullseye",
+    ];
+
+    grid.innerHTML = fallbackIcons
+        .map(
+            (icon, index) => `
+                <div class="badge-item ${index < fallbackEarnedCount ? "" : "locked"}">
+                    <i class="fa-solid ${icon}"></i>
+                </div>
+            `
+        )
+        .join("");
+}
+
 function showDashboardToast(message, isError = false) {
     const toast = document.getElementById("dashboard-toast");
     if (!toast) return;
@@ -258,9 +350,14 @@ function showDashboardToast(message, isError = false) {
 
 async function loadUserData() {
     const profile = profileAPI.get();
-    const name = (profile.username || getMyNameFromToken()).toUpperCase();
-    document.getElementById("header-username").textContent = name;
-    document.getElementById("welcome-username").textContent = name;
+    let resolvedName = profile.username || getMyNameFromToken();
+    const applyHeaderName = (value) => {
+        const label = (value || "PLAYER").toUpperCase();
+        document.getElementById("header-username").textContent = label;
+        document.getElementById("welcome-username").textContent = label;
+    };
+
+    applyHeaderName(resolvedName);
 
     if (profile.avatar) {
         document.getElementById("header-avatar-img").src = profile.avatar;
@@ -274,15 +371,15 @@ async function loadUserData() {
 
     const focusHistory = JSON.parse(localStorage.getItem("hq-focus-history") || "{}");
     const focusMin = Object.values(focusHistory).reduce((sum, value) => sum + value, 0);
-    const earnedBadges = JSON.parse(localStorage.getItem("hq-earned-badges") || "[]");
     const fallbackStats = JSON.parse(localStorage.getItem("stats") || "{}");
 
-    const [leaderboardResult, habitsResult, timetableResult, puzzleResult] =
+    const [leaderboardResult, habitsResult, timetableResult, puzzleResult, badgesResult] =
         await Promise.allSettled([
             leaderboardAPI.get(),
             habitsAPI.getAll(),
             timetableAPI.getAll(),
             puzzleAPI.getCurrent(),
+            gamificationAPI.getBadges(),
         ]);
 
     let xp = fallbackStats.xp || 0;
@@ -290,6 +387,7 @@ async function loadUserData() {
     let habits = [];
     let timetable = [];
     let puzzle = null;
+    let badges = [];
 
     if (leaderboardResult.status === "fulfilled") {
         const myId = getMyUserId();
@@ -299,6 +397,11 @@ async function loadUserData() {
         if (me) {
             xp = Number(me.total_points || 0);
             level = Number(me.level || 1);
+            if ((!resolvedName || resolvedName === "PLAYER") && (me.username || me.name)) {
+                resolvedName = me.username || me.name;
+                profileAPI.save({ username: resolvedName });
+                applyHeaderName(resolvedName);
+            }
         }
     }
 
@@ -318,7 +421,16 @@ async function loadUserData() {
         puzzle = puzzleResult.value.data || null;
     }
 
-    dashboardState = { habits, timetable, puzzle, xp, level };
+    if (badgesResult.status === "fulfilled") {
+        badges = badgesResult.value.data || [];
+    }
+
+    const cachedEarnedBadges =
+        badges.length > 0
+            ? cacheEarnedBadges(badges)
+            : JSON.parse(localStorage.getItem("hq-earned-badges") || "[]");
+
+    dashboardState = { habits, timetable, puzzle, badges, xp, level };
 
     const progress = getLevelProgress(xp);
     document.getElementById("xp-numbers").textContent = `${progress.current} / ${progress.needed} XP`;
@@ -331,7 +443,7 @@ async function loadUserData() {
     document.getElementById("stat-habits").textContent = habits.length;
     document.getElementById("stat-focus").textContent = `${Math.floor(focusMin / 60)}h`;
     document.getElementById("stat-badges").textContent =
-        earnedBadges.length || fallbackStats.badges || 0;
+        cachedEarnedBadges.length || fallbackStats.badges || 0;
     document.getElementById("stat-longest-streak").textContent =
         puzzle?.streak?.best || 0;
 
@@ -339,6 +451,8 @@ async function loadUserData() {
     loadTimetable(timetable);
     loadStreak(puzzle);
     loadPuzzlePreview(puzzle);
+    renderAchievementsPreview(badges, cachedEarnedBadges.length || fallbackStats.badges || 0);
+    renderDashboardFocus();
 }
 
 function loadStreak(puzzle) {
@@ -579,82 +693,111 @@ function handleFocusBlockClick(event) {
     window.location.href = "focus.html";
 }
 
-function getFocusMins() {
-    return parseInt(localStorage.getItem("hq-focus-last-mins") || "15", 10);
-}
-
-let focusRunning = false;
 let focusInterval = null;
-let focusElapsed = 0;
-let focusSeconds = getFocusMins() * 60;
+let focusCompletionInFlight = false;
 
-function initFocusDisplay() {
-    const mins = getFocusMins();
-    focusSeconds = mins * 60;
-    const minutes = Math.floor(focusSeconds / 60)
-        .toString()
-        .padStart(2, "0");
-    const seconds = (focusSeconds % 60).toString().padStart(2, "0");
-    document.getElementById("focus-display").textContent = `${minutes}:${seconds}`;
+function stopFocusLoop() {
+    if (focusInterval) {
+        clearInterval(focusInterval);
+        focusInterval = null;
+    }
 }
 
-function toggleFocus() {
-    if (focusRunning) {
-        clearInterval(focusInterval);
-        focusRunning = false;
-        document.getElementById("focus-icon").className = "fa-solid fa-play";
-        document.getElementById("focus-btn-text").textContent = "START";
-        document.getElementById("focus-ring").classList.remove("running");
+function renderDashboardFocus() {
+    const state = getFocusState();
+    const display = state.remainingSeconds <= 0 && state.completionRecorded
+        ? "DONE"
+        : formatFocusTime(state.remainingSeconds);
+
+    document.getElementById("focus-display").textContent = display;
+    document.getElementById("focus-icon").className = state.isRunning
+        ? "fa-solid fa-pause"
+        : "fa-solid fa-play";
+    document.getElementById("focus-btn-text").textContent = state.isRunning ? "PAUSE" : "START";
+    document.getElementById("focus-ring").classList.toggle("running", state.isRunning);
+    document.getElementById("focus-total-display").textContent = `${getTodayFocusMinutes()} min`;
+}
+
+async function syncDashboardFocus() {
+    const state = getFocusState();
+
+    if (!focusCompletionInFlight && !state.completionRecorded && state.remainingSeconds <= 0) {
+        focusCompletionInFlight = true;
+        stopFocusLoop();
+
+        try {
+            const result = await completeFocusSessionState();
+
+            if (!result.alreadyRecorded) {
+                showDashboardToast(`Focus complete. +${result.xp} XP`);
+            }
+
+            if (Array.isArray(result.newBadges) && result.newBadges.length > 0) {
+                window.setTimeout(() => {
+                    showDashboardToast(`New badge unlocked: ${result.newBadges[0].name}`);
+                }, 800);
+            }
+
+            await loadUserData();
+        } finally {
+            focusCompletionInFlight = false;
+        }
+
         return;
     }
 
-    focusRunning = true;
-    document.getElementById("focus-icon").className = "fa-solid fa-pause";
-    document.getElementById("focus-btn-text").textContent = "PAUSE";
-    document.getElementById("focus-ring").classList.add("running");
+    renderDashboardFocus();
 
-    focusInterval = setInterval(() => {
-        if (focusSeconds <= 0) {
-            const mins = getFocusMins();
-            clearInterval(focusInterval);
-            focusRunning = false;
-            focusElapsed += mins;
-            document.getElementById("focus-total-display").textContent = `${focusElapsed} min`;
-            document.getElementById("focus-display").textContent = "DONE";
-            document.getElementById("focus-icon").className = "fa-solid fa-play";
-            document.getElementById("focus-btn-text").textContent = "START";
-            document.getElementById("focus-ring").classList.remove("running");
-            return;
+    if (state.isRunning) {
+        if (!focusInterval) {
+            focusInterval = setInterval(() => {
+                syncDashboardFocus().catch((error) => {
+                    showDashboardToast(error.message || "Could not sync focus timer.", true);
+                });
+            }, 1000);
+        }
+    } else {
+        stopFocusLoop();
+    }
+}
+
+async function toggleFocus() {
+    const state = getFocusState();
+
+    try {
+        if (state.isRunning) {
+            pauseFocusSessionState();
+        } else {
+            await startFocusSessionState();
         }
 
-        focusSeconds -= 1;
-        const minutes = Math.floor(focusSeconds / 60)
-            .toString()
-            .padStart(2, "0");
-        const seconds = (focusSeconds % 60).toString().padStart(2, "0");
-        document.getElementById("focus-display").textContent = `${minutes}:${seconds}`;
-    }, 1000);
+        await syncDashboardFocus();
+    } catch (error) {
+        showDashboardToast(error.message || "Could not update focus session.", true);
+    }
 }
 
 function resetFocus() {
-    clearInterval(focusInterval);
-    focusRunning = false;
-    focusSeconds = getFocusMins() * 60;
-    const minutes = Math.floor(focusSeconds / 60)
-        .toString()
-        .padStart(2, "0");
-    const seconds = (focusSeconds % 60).toString().padStart(2, "0");
-    document.getElementById("focus-display").textContent = `${minutes}:${seconds}`;
-    document.getElementById("focus-icon").className = "fa-solid fa-play";
-    document.getElementById("focus-btn-text").textContent = "START";
-    document.getElementById("focus-ring").classList.remove("running");
+    resetFocusSessionState();
+    stopFocusLoop();
+    renderDashboardFocus();
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
     requireAuth();
     loadPrefs();
-    initFocusDisplay();
+    ensureFocusState();
+    renderDashboardFocus();
     await loadUserData();
+    await syncDashboardFocus();
+
+    window.addEventListener("storage", (event) => {
+        if (event.key === "hq-focus-state" || event.key === "hq-focus-last-mins") {
+            syncDashboardFocus().catch((error) => {
+                showDashboardToast(error.message || "Could not sync focus timer.", true);
+            });
+        }
+    });
 });
 
 window.setMode = setMode;

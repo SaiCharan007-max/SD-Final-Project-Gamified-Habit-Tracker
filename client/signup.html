@@ -10,12 +10,11 @@
         <link href="https://fonts.googleapis.com/css2?family=Jersey+25&family=Orbitron:wght@400..900&family=SN+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
     </head>
-    <script src="js/auth.js" defer></script>
     <body>
         <header class="app-header">
             <div class="app-logo">HabitQuest</div>
         </header>
-        <div class ="login-page">
+        <div class="login-page">
             <div class="login-layout">
                 <div class="login-info">
                     <h1>Create Your HabitQuest Account</h1>
@@ -34,8 +33,8 @@
                                 <input type="text" id="new-username" placeholder="Choose a username" required />
                             </div>
                             <div class="input-group">
-                                <label for="E-Mail">Email:</label>
-                                <input type="email" id="E-Mail" placeholder="Enter your email" required />
+                                <label for="new-email">Email:</label>
+                                <input type="email" id="new-email" placeholder="Enter your email" required />
                             </div>
                             <div class="input-group password-group">
                                 <label for="new-password">Password:</label>
@@ -71,6 +70,7 @@
                                         <i class="fa-solid fa-eye"></i>
                                     </span>
                                 </div>
+                            </div>
                             <button type="submit" id="register-btn" disabled>Register</button>
                             <p id="signup-error-message"></p>
                         </form>
@@ -78,7 +78,9 @@
                             Already have an account? <a href="index.html">Login here</a>
                         </p>
                     </div>
+                </div>
             </div>
-        </div>       
+        </div>
+        <script src="js/auth.js" defer></script>
     </body>
 </html>

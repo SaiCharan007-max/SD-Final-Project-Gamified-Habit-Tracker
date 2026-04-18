@@ -2,10 +2,15 @@ import AppError from "../utils/AppError.js";
 import * as repoTime from "../repositories/timetable.repository.js";
 
 export const addSlot = async (data) => {
-    if (data.day < 0 || data.day > 6)
+    const normalizedDay = Number(data.day);
+
+    if (!Number.isInteger(normalizedDay) || normalizedDay < 0 || normalizedDay > 6)
         throw new AppError("Invalid day_of_week", 400);
 
-    return await repoTime.createSlot(data);
+    return await repoTime.createSlot({
+        ...data,
+        day: normalizedDay
+    });
 };
 
 export const getSchedule = async (userId) => {

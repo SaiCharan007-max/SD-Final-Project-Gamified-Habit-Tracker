@@ -1,7 +1,20 @@
 const API_ORIGIN =
-    window.location.protocol.startsWith("http") && /:(3000|3137)$/.test(window.location.origin)
+    window.location.protocol.startsWith("http") && /:3137$/.test(window.location.origin)
         ? window.location.origin
-        : "http://localhost:3000";
+        : "http://localhost:3137";
+
+function persistUserProfile(user) {
+    if (!user) return;
+
+    const existing = JSON.parse(localStorage.getItem("hq-profile") || "{}");
+    const username = user.name || user.username || existing.username || "";
+    const merged = {
+        ...existing,
+        username,
+    };
+
+    localStorage.setItem("hq-profile", JSON.stringify(merged));
+}
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -48,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (response.ok) {
                     localStorage.setItem("token", result.token);
+                    persistUserProfile(result.user);
                     window.location.href = "dashboard.html";
                 }
                 else {
@@ -68,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const registerBtn = document.getElementById("register-btn");
 
     const signupUsernameInput = document.getElementById("new-username");
-    const signupEmailInput = document.getElementById("E-Mail");
+    const signupEmailInput = document.getElementById("new-email");
     const signupPasswordInput = document.getElementById("new-password");
     const confirmPasswordInput = document.getElementById("confirm-password");
 
@@ -156,6 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     // Store token from registration response
                     if (result.token) {
                         localStorage.setItem("token", result.token);
+                        persistUserProfile(result.user);
                         window.location.href = "dashboard.html";
                     } else {
                         // Fallback to login if no token

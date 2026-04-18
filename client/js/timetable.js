@@ -108,6 +108,39 @@ function enrich(bs) {
     };
 }
 
+function normalizeDayIndex(value) {
+    const day = Number(value);
+    return Number.isInteger(day) ? day : -1;
+}
+
+function sortDaySlots(dayIndex) {
+    if (dayIndex < 0 || dayIndex > 6) return;
+    schedule[dayIndex].sort((a, b) => a.start.localeCompare(b.start));
+}
+
+function removeSlotFromSchedule(slotId) {
+    schedule = schedule.map(daySlots => daySlots.filter(slot => slot.id !== slotId));
+}
+
+function upsertSlotInSchedule(slot) {
+    const dayIndex = normalizeDayIndex(slot.day);
+    if (dayIndex < 0 || dayIndex > 6) return;
+
+    removeSlotFromSchedule(slot.id);
+    schedule[dayIndex].push(slot);
+    sortDaySlots(dayIndex);
+}
+
+function commitScheduleToUi() {
+    syncDashboard();
+    render();
+}
+
+async function refreshScheduleFromServer() {
+    await loadSchedule();
+    render();
+}
+
 // ── LOAD FROM BACKEND ──
 async function loadSchedule() {
     try {
@@ -344,13 +377,15 @@ async function saveSlot() {
 
         try {
             const res    = await timetableAPI.addSlot({
-                day_of_week: editingDay,
+                day:         editingDay,
                 title:       subject,
                 start_time:  start,
                 end_time:    end,
             });
             const newId = res.data?.id;
             if (newId) saveSlotExtras(newId, { color: selectedColor, done: modalDone, important: modalImportant, reminder: modalReminder });
+            removeSlotFromSchedule(editingId);
+            if (res.data) upsertSlotInSchedule(enrich(res.data));
         } catch(e) {
             errEl.textContent = e?.message ? `Failed to save: ${e.message}` : 'Failed to save. Try again.';
             await loadAndRender();
@@ -362,13 +397,14 @@ async function saveSlot() {
         const day = pendingDay !== null ? pendingDay : 0;
         try {
             const res   = await timetableAPI.addSlot({
-                day_of_week: day,
+                day:         day,
                 title:       subject,
                 start_time:  start,
                 end_time:    end,
             });
             const newId = res.data?.id;
             if (newId) saveSlotExtras(newId, { color: selectedColor, done: modalDone, important: modalImportant, reminder: modalReminder });
+            if (res.data) upsertSlotInSchedule(enrich(res.data));
         } catch(e) {
             errEl.textContent = e?.message ? `Failed to save: ${e.message}` : 'Failed to save. Try again.';
             return;
@@ -376,7 +412,8 @@ async function saveSlot() {
     }
 
     closeModal();
-    await loadAndRender();
+    commitScheduleToUi();
+    await refreshScheduleFromServer();
 }
 
 // ── DELETE SLOT ──
@@ -385,11 +422,13 @@ async function deleteSlot() {
     try {
         await timetableAPI.deleteSlot(editingId);
         deleteSlotExtras(editingId);
+        removeSlotFromSchedule(editingId);
     } catch(e) {
         console.warn('Delete failed:', e);
     }
     closeModal();
-    await loadAndRender();
+    commitScheduleToUi();
+    await refreshScheduleFromServer();
 }
 
 // ── UPDATE EXTRAS LOCALLY (done/important/reminder don't need backend) ──

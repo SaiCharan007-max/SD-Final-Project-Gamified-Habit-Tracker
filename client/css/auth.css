@@ -273,8 +273,10 @@ button:active {
 }
 
 button:disabled {
-    opacity: 0.5;
+    opacity: 0.8;
     cursor: not-allowed;
     box-shadow: none;
     transform: none;
+    background-color: #a3842d !important;
+    color: #091018 !important;
 }

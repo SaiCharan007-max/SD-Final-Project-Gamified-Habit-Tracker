@@ -84,7 +84,17 @@ async function loadProfile() {
         if (res.ok) {
             const data = await res.json();
             const me   = (data.data||[]).find(u => u.userId===userId||u.id===userId);
-            if (me) { xp = me.total_points||0; level = me.level||1; }
+            if (me) {
+                xp = me.total_points||0;
+                level = me.level||1;
+
+                if ((!profile.username || profile.username === 'PLAYER') && (me.username || me.name)) {
+                    const fallbackName = me.username || me.name;
+                    profileAPI.save({ username: fallbackName });
+                    document.getElementById('username-display').textContent = fallbackName;
+                    document.getElementById('username-input').value = fallbackName;
+                }
+            }
         }
     } catch(e) { /* use localStorage fallback */ }
 

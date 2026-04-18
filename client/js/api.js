@@ -1,8 +1,11 @@
-const FALLBACK_API_ORIGIN = "http://localhost:3000";
-const API_ORIGIN =
-    window.location.protocol.startsWith("http") && /:(3000|3137)$/.test(window.location.origin)
-        ? window.location.origin
-        : FALLBACK_API_ORIGIN;
+const isLocalFile = window.location.protocol === "file:";
+const isLocalhost =
+    window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const API_ORIGIN = isLocalFile
+    ? "http://localhost:3137"
+    : isLocalhost
+      ? `${window.location.protocol}//${window.location.host}`
+      : window.location.origin;
 const BASE = `${API_ORIGIN}/api`;
 
 export function getToken() {
